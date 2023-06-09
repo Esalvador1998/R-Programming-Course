@@ -1,0 +1,453 @@
+---
+title: "CMDA-3654"
+subtitle: "Homework 1"
+author: "Eduardo Salvador"
+date: "Due as a .pdf upload"
+output:
+  html_document:
+    df_print: paged
+  pdf_document:
+    highlight: haddock
+    keep_tex: no
+    number_sections: no
+geometry: margin = 0.5in
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage{xcolor}
+editor_options:
+  chunk_output_type: console
+documentclass: article
+urlcolor: blue
+---
+
+<!-- The above is set to automatically compile to a .pdf file.   -->
+<!-- It will only succeed if LaTeX is installed. -->
+
+
+```{r setup, include=FALSE}
+# This is the setup chunk
+#  Here you can set global options for the entire document
+
+library(knitr) # I recommend doing this
+
+# Although you can call functions from a library using the following notation
+#  without loading the entire library.
+knitr::opts_chunk$set(echo = TRUE, 
+                      comment = NA, # Recommended
+                      fig.path = "./figures/",  # Store all figures here in relative path (make the folder first)
+                      fig.align = "center",
+                      fig.width = 7,
+                      fig.height = 7,
+                      message = FALSE, # Turn off load messages
+                      warning = FALSE # Turn off warnings
+                      )
+
+```
+
+\clearpage
+
+```{r include=FALSE}
+# You should not echo this chunk.
+# include=FALSE does more than echo=FALSE, it actually does: echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='hide'
+
+# You should set your working directory at the very beginning of your R Markdown file
+# setwd("~/Dropbox/teaching/SU19/CMDA_3654/homework/homework1/")
+
+# In linux ~/ is shorthand for /home/username/
+# You should type things out properly for your system
+# Mac: /Users/username/Documents/CMDA3654/Lectures/Lecture_03/.../
+# Windows: C:/Users/username/Documents/etc/Lecture/Lecture_03/.../
+
+
+```
+
+setwd("~/Desktop/CMDA /Assignments/HW1")
+
+
+<!-- ---------------------------------------------------------------------------------------------------- -->
+<!-- ---------------- Homework Problems start below these lines ----------------------------------------- -->
+<!-- ---------------------------------------------------------------------------------------------------- -->
+
+
+
+
+***
+
+# Instructions:
+
+I have given you this assignment as an .Rmd (R Markdown) file.  
+
+* Change the name of the file to: `Lastname_Firstname_CMDA_3654_HW1.Rmd`, and your output should therefore match but with a `.pdf` extension.
+
+* You need to edit the R Markdown file by filling in the chunks appropriately with your code.  Output will be generated automatically when you compile the document.  
+
+* You also need to add your own text before and after the chunks to explain what you are doing or to interpret the output.
+
+* Feel free to add additional chunks if needed.  I **will not** be providing assignments to you like this for the entire semester, just long enough for you to learn how to do it for yourself.
+
+**Required: The final product that you turn in must be a .pdf file.**  
+
+* You can Knit this document directly to a PDF if you have LaTeX installed (which is preferred).
+
+* If you absolutely can't get LaTeX installed and/or working, then you can compile to a .html first, by clicking on the arrow button next to knit and selecting Knit to HTML.
+
+* You must then print you .html file to a .pdf by using first opening it in a web browser and then printing to a .pdf
+
+***
+
+
+# Problem 1: (30 pts) Learning about new `R` functions and matrix multiplication.
+
+a. Do the following using only a single line of code. First, learn how to use the `rep()` function.  Using `rep()` create the following vector $\textbf{x}$:
+$$\textbf{x} = [1,2,2,3,3,3,4,4,4,4,5,5,5,5,5,6,6,6,6,6,6,7,7,7,7,7,7,7]^{T}$$ 
+then convert this vector into a $4\times7$ matrix, called `A` formed by filling it by the rows. In an additional line, please print `A` to verify your result.
+
+#rep is a funciton to replicate and used times to say the number of times I want to replicte each number
+```{r}
+A<-matrix(rep(c(1,2,3,4,5,6,7),times=c(1,2,3,4,5,6,7))^(T),nrow=4,ncol=7, byrow=T)
+A
+```
+#Repeat each number, this many times with number of rows being 4 and number of columns being 7 byrow
+
+b. Print out the entry $a_{1,4}$, that is, the from the first row and fourth column of matrix $A$.
+
+```{r}
+A[1,4]
+```
+#Select number in 1st row of 4th column
+
+c. Using a single line, convert $\textbf{x}$ into a $7\times4$ matrix called `B` by filling in by rows first.  For comparison, take the transpose of `A` and comment on the difference.
+
+```{r}
+B<-matrix(rep(c(1,2,3,4,5,6,7),times=c(1,2,3,4,5,6,7))^(T), nrow=7,ncol=4, byrow=T)
+B
+t(A)
+```
+#Recreate matrix A but this time number of rows is 7 and number of columns is 3 ordered by rows
+#The difference can be seen in the arrangement of both matrixces, B being by row and the transpose of A being by column
+
+d. Learn how to perform matrix multiplications in R.  Then perform the matrix multiplication $AB$, and report the result.
+
+```{r}
+AB<-A %*% B
+AB
+```
+# With %% one can perform multiplications
+#The matrix got reduced to a 4 by 4 instead of a 4 by 7 or 7 by 4 
+
+e. Convert matrix $AB$ to a data frame, and save it as `my_first_df`.
+
+```{r}
+my_first_df<-data.frame(AB)
+my_first_df
+```
+#data.frame function converges any type of data into a dataframe
+
+
+f. Add a column named `experiment` to `my_first_df`, where the first two observations are the string `"+"`, and the last two observations are the string `"-"`, and print the resulting data frame.  Convert this column to a factor.  Print out your final data frame along with the output from `str(my_first_df)`.
+
+```{r}
+experiment<-c("+","+","-","-")
+experiment
+newdata<-cbind(my_first_df,experiment)
+newdata
+newdata$experiment=factor(experiment)
+str(newdata)
+
+```
+#The c function combines values into vector or list desired and by using cbind I was able to combine objects by rows or columns 
+
+
+<!-- The end of problem 1 -->
+***
+<!-- The following is ignored when trying to Knit to html. -->
+\newpage
+
+
+# Problem 2: (20 pts) Loading in and exploring data with `R`.
+
+The `puso` dataset contains information from NOAA concerning sediment contents of soil samples, along with a label discerning whether the soil is considered toxic or not.
+
+a. Begin by reading in the `puso.csv` file into your `R` session, and properly storing it as a dataframe (note is does have a header).  Show the first 5 rows of the first 8 columns to demonstrate that you loaded it in correctly.
+
+```{r}
+puso <- read.csv(file = "/Users/eduardosalvador/Desktop/CMDA /Assignments/HW1/puso.csv", header =T)
+puso[1:5,1:8]
+```
+#For this mac use /Users/eduardosalvador/Desktop/CMDA / and if dataframe has header, equal it to true
+
+b. Create a barplot depicting the proportion of toxic samples and non-toxic samples. Be sure to create appropriate axis labels, make the bars *distinct* colors, give the binary values descriptive names (1 = Toxic, 0 = Non-Toxic) and create a descriptive main title for your plot. There are a number of different ways to accomplish this task, so don't feel like there is **only** one solution.
+
+```{r}
+barplot( table( puso$toxic ) , names.arg = c("Toxic", "NonToxic"),
+         ylim = c(0, 500), col=c("green","blue"), 
+         main = "Toxic vs Nontoxic" )
+
+```
+# Convertaded dataframe into table them used boxplot function and detailed it, making the toxic green and nontoxic blue
+
+c. Seperate the dataset into two seperate datasets: one containing samples classified as toxic, and those that are not. Report the first 5 rows of each data set.
+
+```{r}
+Toxic <- subset(puso, TOXCODE == T)
+Toxic[1:5,]
+Nontoxic<-subset(puso,TOXCODE==F)
+Nontoxic[1:5,]
+```
+#Used subset function to separate datasets and where TAXCODE when True is Toxic and when False is Nontoxic
+
+d. For each dataset, create a summary table for each variable in the data set. The descriptive statistics should include the mean, standard deviation, range, and number of missing values for that given variable. *Hint:* A very simple way to do this is to create an empty matrix, fill it with the needed values, and to name the rows and columns appropriately. Print your table nicely using `kable()` or `pandoc.table()`
+
+```{r}
+MeanT<-(apply(Toxic,2,mean,na.rm=T))
+SDT<-(apply(Toxic,2,sd,na.rm=T))
+RangeT<-(apply(Toxic,2,max,na.rm=T))-(apply(Toxic,2,min,na.rm=T))
+MissingValuesT<-(apply(Toxic,2,function(x) sum(is.na(x))))
+
+MeanNT<-(apply(Nontoxic,2,mean,na.rm=T))
+SDNT<-(apply(Nontoxic,2,sd,na.rm=T))
+RangeNT<-(apply(Nontoxic,2,max,na.rm=T))-(apply(Nontoxic,2,min,na.rm=T))
+MissingValuesNT<-(apply(Nontoxic,2,function(x) sum(is.na(x))))
+
+Tmatrix<-rbind(MeanT, SDT, RangeT, MissingValuesT)[,3:24]
+Tmatrix
+
+NTmatrix<-rbind(MeanNT, SDNT, RangeNT, MissingValuesNT)[,3:24]
+NTmatrix
+
+kable(Tmatrix)
+kable(NTmatrix)
+```
+#Found on google that apply function can find any metric applied to all columns(2) or rows(1)
+#Used na.rm to as a logical value that strips any NA value from the dataset
+#For the range I looked for the max value and subtracted the min of each column
+#For the missing values I looked up a function in google called sum(is.na) which calculate the amount of NA for every column using apply
+#Combine each calculated field by row starting from column 3 to 24 since the first 2 are not to be considered
+#Used kable to be able to create tables 
+
+<!-- The end of problem 2 -->
+***
+<!-- The following is ignored when trying to Knit to html. -->
+\newpage
+
+# Problem 3: (25 pts) Common Plots in `Base R`.
+
+Consider the dataset `cars.csv`. It contains information about 406 cars (in 407 rows - the first row is the names of the variables). Information on car name, mileage (MPG), number of cylinders, displacement, horsepower, weight, acceleration, model, and country of origin are available.
+
+Answer the following questions based on this dataset.
+
+a. Identify the types of each variable available in the dataset. Be as specific as you possibly can (Quantitative variables can be either Continuous vs discrete, Categorical can be either Nominal vs Ordinal etc).
+
+```{r}
+#For this mac use /Users/eduardosalvador/Desktop/CMDA / and if dataframe has header, equal it to true
+cars <- read.csv(file = "/Users/eduardosalvador/Desktop/CMDA /Assignments/HW1/cars.csv", header =T)
+
+typeof(cars$Car)
+#Car is a Nominal type of vairable which falls in the Categorical group
+typeof(cars$MPG)
+#MPG is a Discrete type of variable which falls in the Quantitative group
+typeof(cars$Cylinders)
+#Cylinders is a Discrete type of variable which falls in the Quantitative group
+typeof(cars$Displacement)
+#Displacement is a Contineous type of variable which falls in the Quantitative group
+typeof(cars$Horsepower)
+#Horsepower is a Discrete type of variable which falls in the Quantitative group
+typeof(cars$Weight)
+#Weight is a Continuous type of variable which falls in the Quantitative group
+typeof(cars$Acceleration)
+#Acceleration is a Discrete type of variable which falls in the Quantitative group
+typeof(cars$Model)
+#Model is a Ordinal type of variable which falls in the Categorical group
+typeof(cars$Origin)
+#Origin is a Nominal type of variable which falls in the Categorical group
+```
+
+b. Make a histogram for the displacement variable first using `breaks = 5` and again with `breaks = 10`. Use relative frequencies (or densities). Label all the axes properly. Identify the skew of the histogram and the mode of the data.
+
+```{r}
+hist(cars$Displacement, probability = T, xlim = c(0, 500) , ylim = c(0, 0.010),
+     xlab = "Displacement", ylab = "relative frequency", main = "Cars Displacement over Time",
+     breaks = 5, col="gold")
+
+hist(cars$Displacement, probability = T, xlim = c(0, 500) , ylim = c(0, 0.010),
+     xlab = "Displacement", ylab = "relative frequency", main = "Cars Displacement over Time",
+     breaks = 10, col="magenta")
+library(e1071)
+skewness(cars$Displacement)
+
+#For mode created a table of cars displacement, coverted it into a data.frame, then to a character to be able to convert it gagin into numeric so that I could figure out which has the most frequencies. Then output this Var which has the most frequency
+mode_1<-as.data.frame(table(cars$Displacement))
+mode_1
+as.numeric(as.character(mode_1$Var1))
+max_mode<-max(mode_1$Freq)
+mode_1[mode_1$Freq==max_mode,1]
+
+
+
+```
+#Created histogram with details and for the skeweness downloaded package e1071 to get function skewness.
+#For mode created a table of cars displacement, coverted it into a data.frame, then to a character to be able to convert it gagin into numeric so that I could figure out which has the most frequencies. Then output this Var which has the most frequency
+
+
+c. Make a kernel density estimation plot for the horsepower variable. Make a kernel density estimation plot for the horsepower variable, but this time exclude all vehicles that originate in the US.
+
+```{r}
+Not_US<-subset(cars, Origin!="US")
+plot(density(Not_US$Horsepower),                                    
+     main = "Not in US Cars",
+     xlab = "Horsepower",
+     ylab = "Density", polygon(density(Not_US$Horsepower), col = "#1b98e0", ))
+
+```
+#Created subset of cars data and use != as not equal to, to get rid of cars from the US.
+#Then created a density plot adding colors and a line on the edges with polygon and color function.
+
+d. Generate a boxplot for the Horsepower variable. Discuss briefly what the boxplot indicates about the horsepower of the cars in the dataset. Generate a boxplot for the MPG variable. Do you notice any suspicious observations or outliers for MPG? Explain.
+
+```{r}
+boxplot( cars$Horsepower , 
+         xlab = "Horsepower", ylab = "", main="Horsepower bt MPG")
+
+boxplot( cars$MPG , 
+         xlab = "MPG", ylab = "", main="Horsepower bt MPG")
+```
+#MPG outliers are every value of MPG which results in 0 since it is unreasonale to have a car with MPG at 0
+
+
+e. For the cars that do not have suspicious observations for MPG, plot the MPG versus Horsepower. Repeat the above, but this time make three scatter plots. One for US cars, one for European Cars, and finally one for Japanese Cars.
+
+```{r}
+Disregard_NMPG<-subset(cars, MPG!="0")
+plot( Disregard_NMPG$MPG ~ Disregard_NMPG$Horsepower,
+         xlab = "Horsepower", ylab = "MPG", main="MPG by Horsepower", pch=25)
+
+US_cars<-subset(cars, Origin=="US", MPG!="0")
+plot( US_cars$MPG ~ US_cars$Horsepower,
+         xlab = "Horsepower", ylab = "MPG", main="MPG by Horsepower only US cars", pch=25)
+
+Europe_cars<-subset(cars, Origin=="Europe", MPG!="0")
+plot( Europe_cars$MPG ~ Europe_cars$Horsepower,
+         xlab = "Horsepower", ylab = "MPG", main="MPG by Horsepower only Europe cars", pch=25)
+
+
+Japanese_cars<-subset(cars, Origin=="Japan", MPG!="0")
+plot( Japanese_cars$MPG ~ Japanese_cars$Horsepower,
+         xlab = "Horsepower", ylab = "MPG", main="MPG by Horsepower only Japanese cars", pch=25)
+
+```
+#Created it to disregard MPG's outlier and then created a boxplot of MPG versus Horsepower with ~ 
+
+
+
+<!-- The end of problem 3 -->
+***
+<!-- The following is ignored when trying to Knit to html. -->
+\newpage
+
+
+# Problem 4: [25 pts]
+
+Install the R package `babynames`. Load the `babynames` data and answer the following questions. Report R code and answers.
+
+a. Describe the dataset in two sentences. How many rows and columns does the dataset have?
+
+```{r}
+library(babynames)
+```
+# The babynames dataset has 5 columns and 1,924,665 rows containing several entires of babies  from 1880 to 2017, sex, Name of the baby, prop which is the variable prop represents the proportion of all applicants of that sex in that year that had that name and n which represents the number of applications in that year for that name and sex.
+
+b. How many unique names are there in the dataset? Why is this number different from the number of rows in (a)?
+
+```{r}
+length(unique(babynames$name))
+
+```
+##97310, it is different from the number of rows since some names repeat itself
+
+
+c. What were the most popular male names for the years 1900, 1925, 1950, 1975, 2000? What were the most popular female names for the years 2010, 2011, 2012, 2013, 2014?
+
+```{r}
+Names_1900<-subset(subset(babynames, sex=="M"), year=="1900" )
+Maxquant_1900=max(Names_1900$n)
+Names_1900[Names_1900[,4]==Maxquant_1900, ]
+
+```{r}
+Names_1925<-subset(subset(babynames, sex=="M"), year=="1925")
+Maxquant_1925=max(Names_1925$n)
+Names_1925[Names_1925[,4]==Maxquant_1925, ]
+
+```{r}
+Names_1950<-subset(subset(babynames, sex=="M"), year=="1950")
+Maxquant_1950=max(Names_1950$n)
+Names_1950[Names_1950[,4]==Maxquant_1950, ]
+
+```{r}
+Names_1975<-subset(subset(babynames, sex=="M"), year=="1975")
+Maxquant_1975=max(Names_1975$n)
+Names_1975[Names_1975[,4]==Maxquant_1975, ]
+
+```{r}
+Names_2010<-subset(subset(babynames, sex=="F"), year=="2010")
+Maxquant_2010=max(Names_2010$n)
+Names_2010[Names_2010[,4]==Maxquant_2010, ]
+
+```{r}
+Names_2011<-subset(subset(babynames, sex=="F"), year=="2011")
+Maxquant_2011=max(Names_2011$n)
+Names_2011[Names_2011[,4]==Maxquant_2011, ]
+
+```{r}
+Names_2012<-subset(subset(babynames, sex=="F"), year=="2012")
+Maxquant_2012=max(Names_2012$n)
+Names_2012[Names_2012[,4]==Maxquant_2012, ]
+
+Names_2013<-subset(subset(babynames, sex=="F"), year=="2013")
+Maxquant_2013=max(Names_2013$n)
+Names_2013[Names_2013[,4]==Maxquant_2013, ]
+
+Names_2014<-subset(subset(babynames, sex=="F"), year=="2014")
+Maxquant_2014=max(Names_2014$n)
+Names_2014[Names_2014[,4]==Maxquant_2014, ]
+```
+#Created a subset with all male or female babynames of a specific year then looked for the max repeats and output the max quantity for every single year
+
+
+d. What are the 10 most popular male baby names across years? What are the 10 most popular female baby names across years?
+
+
+```{r}
+PopularMaleNames<-subset(babynames, sex=="M")
+DifferenciationM<-PopularMaleNames[PopularMaleNames[,3]==unique(PopularMaleNames$name),]
+
+MaleNamesbyOrder<-DifferenciationM[order(DifferenciationM$n, decreasing=TRUE),]
+MaleNamesbyOrder[1:10,3]
+
+PopularFemaleNames<-subset(babynames, sex=="F")
+DifferenciationF<-PopularFemaleNames[PopularFemaleNames[,3]==unique(PopularFemaleNames$name),]
+
+FemaleNamesbyOrder<-DifferenciationF[order(DifferenciationF$n, decreasing=TRUE),]
+FemaleNamesbyOrder[1:10,3]
+```
+#Created a subset of babies only males and only females
+#Made the names unique so that it doesn't repeat themselves in the list
+#Ordered the unique names from most to least and outputed the solution
+
+
+
+<!-- End of Problem 4 and the assignment  -->
+***
+&nbsp;
+

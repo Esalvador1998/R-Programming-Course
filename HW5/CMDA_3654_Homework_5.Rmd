@@ -1,0 +1,408 @@
+---
+title: "CMDA-3654"
+subtitle: "Homework 5"
+author: "Eduardo Salvador"
+date: "Due as a .pdf upload"
+output:
+  html_document:
+    df_print: paged
+  pdf_document:
+    highlight: haddock
+    keep_tex: no
+    number_sections: no
+geometry: margin = 0.5in
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage{xcolor}
+editor_options:
+  chunk_output_type: console
+documentclass: article
+urlcolor: blue
+---
+
+<!-- The above is set to automatically compile to a .pdf file.   -->
+<!-- It will only succeed if LaTeX is installed. -->
+
+```{r setup, include=FALSE}
+# This is the setup chunk
+#  Here you can set global options for the entire document
+
+library(knitr) # I recommend doing this
+
+# Although you can call functions from a library using the following notation
+#  without loading the entire library.
+knitr::opts_chunk$set(echo = TRUE, 
+                      comment = NA, # Recommended
+                      fig.path = "./figures/",  # Store all figures here in relative path (make the folder first)
+                      fig.align = "center",
+                      fig.width = 7,
+                      fig.height = 7,
+                      message = FALSE, # Turn off load messages
+                      warning = FALSE # Turn off warnings
+                      )
+
+```
+
+\clearpage
+
+```{r include=FALSE}
+# You should not echo this chunk.
+# include=FALSE does more than echo=FALSE, it actually does: echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='hide'
+
+# You should set your working directory at the very beginning of your R Markdown file
+# setwd("~/Dropbox/teaching/SU19/CMDA_3654/homework/homework1/")
+
+# In linux ~/ is shorthand for /home/username/
+# You should type things out properly for your system
+# Mac: /Users/username/Documents/CMDA3654/Lectures/Lecture_03/.../
+# Windows: C:/Users/username/Documents/etc/Lecture/Lecture_03/.../
+
+
+```
+
+<!-- ---------------------------------------------------------------------------------------------------- -->
+<!-- ---------------- Homework Problems start below these lines ----------------------------------------- -->
+<!-- ---------------------------------------------------------------------------------------------------- -->
+
+
+
+
+***
+
+# Instructions:
+
+**Delete the Instructions section from your write-up!!**
+
+I have given you this assignment as an .Rmd (R Markdown) file.  
+
+* Change the name of the file to: `Lastname_Firstname_CMDA_3654_HW5.Rmd`, and your output should therefore match but with a `.pdf` extension.
+
+* You need to edit the R Markdown file by filling in the chunks appropriately with your code.  Output will be generated automatically when you compile the document.  
+
+* You also need to add your own text before and after the chunks to explain what you are doing or to interpret the output.
+
+* Feel free to add additional chunks if needed.  I **will not** be providing assignments to you like this for the entire semester, just long enough for you to learn how to do it for yourself.
+
+**Required: The final product that you turn in must be a .pdf file.**  
+
+* You MUST Knit this document directly to a PDF conversion from another format is not permitted.
+
+***
+
+
+
+
+
+
+# Problem 1: [50 pts] Tidying Data with `dplyr`
+
+## Unicorns on unicycles
+
+This dataset is thought to have been recorded by an amateur scientist, a natural philosopher by the name of Rudolphus in the 17th century in The Netherlands. This scientist recorded the annual population of unicorns in western Europe over a century and also recorded the sales of unicycles in that same time period. Although not much of the accompanying text remains of the original documents, what we can read is the tables and the idea that Rudolphus thought there was some sort of relationship between uncorns and unicycle sales.
+
+The documents were recently unearthed from a hidden chest in Delft and seem to be written by Rudolphus Hogervorstus, my great great great uncle, in 1681. These documents show that he was studying the then roaming herds of unicorns in the area around Delft. Unfortunately these animals are extinct now.
+
+His work contains multiple tables, carefully written down, documenting the population of unicorns over time in multiple places and related to that the sales and numbers of unicycles in those countries.
+
+There are also some text describing the hypotheses of Rudolphus, but most of the texts were eaten by moths and have decayed over time. Some of the remaining text suggest that, according to Rudolphus, the unicorn populations and unicycles were related: "The presence of the cone on the unicorn hints at a very defined sense of equilibrium, ...[some missing text].....
+it is therefore only natural to assume unicorns ride unicycles".
+
+### Your task
+We want to discover the relationship between unicorns and unicycles. As part of the archival process these tables were copied in excel.
+
+Try to read the data in, if you are using R, try the package `readxl`. It also helps if you look at the data before reading it in.
+
+Load the two files, try to join them together.
+
+Is there a relation between unicorns and unicycles?
+
+### About the data
+
+Consider the `sales.xlsx` and `observations.xlsx` data sets.
+
+* `observations.xlsx` contains information about the population of unicorns for specific years different countries.
+
+* `sales.xlsx` contains two tables one of them consists of the total number of unicycles sold.  The other is the revenue from the unicycle sales.
+
+
+### Problem Instructions
+
+a. Join the two files together to create a single data frame, called `unicorns.cycling`. (Be sure to take precautions concerning country names being slightly different in the two files). Create a "tidy" data frame with appropriately named variables. (i.e. country, year, variable1, variable2, etc).  Display the first 10 rows of the final data frame.
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(dplyr)
+#Bring up Excel files using read_xlsx
+obs <- read_xlsx("/Users/eduardosalvador/Desktop/FINAL\ Spring\ Semester\ 2021/CMDA\ /Assignments/HW5/observations.xlsx")
+sales <- read_xlsx("/Users/eduardosalvador/Desktop/FINAL\ Spring\ Semester\ 2021/CMDA\ /Assignments/HW5/sales.xlsx")
+#Selected colums 6 to 8 for turnover and 1 to 3 for sales
+total_turnover <- select(sales,6:8)
+unicycle <- select(sales,1:3)
+#Set up to be able to merge
+names(unicycle)[1] <- "countryname"
+names(unicycle)[2] <- "year"
+names(total_turnover)[1] <- "countryname"
+names(total_turnover)[2] <- "year"
+#Merging dataframe by countryname and year in sales
+sales <- merge(total_turnover,unicycle,by = c("countryname","year"),all.x=T)
+#Getting population observations
+obs$countryname <- toupper(obs$countryname)
+#Displaying first 10 rows of dataframe by left join sales and observations
+unicorns.cycling<-left_join(sales,obs)
+unicorns.cycling[1:10,]
+```
+
+b. Report a summary table of this new “tidy” data frame.
+```{r}
+#Used summary function
+summary(unicorns.cycling)
+```
+
+c. Use `dplyr`, create new variables that calculate the mean, min, and max of both `unicorns` and `unicycles` by year.
+```{r}
+library(dplyr)
+#Groupping together unicorn.cycling with the year as a variable
+together<-group_by(unicorns.cycling,year)
+#Using summerise function to get mean,min and max
+summarise(together,"Mean population of unicorns"=mean(pop))
+  summarise(together,"Min population of unicorns"=min(pop))
+  summarise(together,"Max population of unicorns"=max(pop))
+  summarise(together,"Mean unicycles"=mean(unicycles))
+  summarise(together,"Min unicycles"=min(unicycles))
+  summarise(together,"Max unicycles"=max(unicycles))
+```
+
+d. Write your own R function to calculate the max number of unicorns and unicylces for each year. Return a list/data frame with the year and values.
+```{r}
+#Calling function and creating if and else statement to get max num of unicorns and unicycles
+grande<- function(unicorns.cycling){
+  for(i in 1:nrow(unicorns.cycling)){
+    if(unicorns.cycling$unicycles<unicorns.cycling$pop){
+      get_max<-unicorns.cycling$pop
+    }
+    else{
+      get_max<-unicorns.cycling$unicycles
+    }
+    unicorns.cycling["get_max"]<-get_max
+  }
+  unicorns.cycling %>%
+    select(year,get_max)
+}
+#Using function on unicorns.cycling
+grande(unicorns.cycling)
+```
+
+e. Use `ggplot()` to plot a scatterplot for the number of unicycles sold versus the number of unicorns.
+```{r}
+#Dsiplaying ggplot with layers
+ ggplot(data = unicorns.cycling,aes(x = pop, y = unicycles))+
+  ggtitle("Number of unicycles sold vs Number of unicorns")+
+  scale_x_continuous("Unicorns") +
+   scale_y_continuous("Unicycles")+geom_point() + theme_bw()
+
+```
+
+f. Comment on how you feel using 1 for this type of problem differed from using functions in `Base R`. Do you think this process was easier or harder? There’s no wrong answer here, every R programmer has their own personal preference, just give your own personal opinion on the `tidyverse.`
+```{r}
+#I don't like it, I prefer using base R but, will try to get used to it.
+```
+
+
+<!-- End of Problem 1 -->
+***
+&nbsp;
+
+# Problem 2: [50 pts] More Practice with EDA and Data Wrangling.
+
+The data comes from Marvel Wikia and DC Wikia.
+
+The data is split into two files, for DC and Marvel, respectively: `dc-wikia-data.csv` and `marvel-wikia-data.csv`.
+
+Each file has the following variables:
+
+
+| Variable} | Definition       |
+|----------:|:-----------------|
+|page_id | The unique identifier for that characters page within the wikia |
+|name | The name of the character |
+||urlslug | The unique url within the wikia that takes you to the character |
+|ID | The identity status of the character (Secret Identity, Public identity, [on marvel only: No Dual Identity]) |
+|ALIGN | If the character is Good, Bad or Neutral |
+|EYE | Eye color of the character |
+|HAIR | Hair color of the character |
+|SEX | Sex of the character (e.g. Male, Female, etc.) |
+|GSM | If the character is a gender or sexual minority (e.g. Homosexual characters, bisexual characters) |
+|ALIVE | If the character is alive or deceased |
+|APPEARANCES | The number of appareances of the character in comic books (as of Sep. 2, 2014. Number will become increasingly out of date as time goes on.) |
+|FIRST APPEARANCE | The month and year of the character's first appearance in a comic book, if available |
+|YEAR | The year of the character's first appearance in a comic book, if available |
+
+**Note:** These data sets have plenty of missing values so you will need to handle them appropriately depending on the situation.
+
+a. Let’s do some very basic data cleaning. `FIRST APPEARANCE` is formatted differently in the two data sets. They both contain the month and year for first appearance. Additionally the variable `YEAR` contains the Year of first appearance (so there is a redundancy). Rename the `FIRST APPEARANCE` variable to `MONTH` and fix the observations so that they will be the Month given by the full word, i.e. March instead of Mar.
+```{r}
+#Additional tidyverse package
+library(lubridate)
+#Loading excel files
+DC_Wikia <- read.csv("/Users/eduardosalvador/Desktop/FINAL\ Spring\ Semester\ 2021/CMDA\ /Assignments/HW5/dc-wikia-data.csv", header = T)
+Marvel_Wikia <- read.csv("/Users/eduardosalvador/Desktop/FINAL\ Spring\ Semester\ 2021/CMDA\ /Assignments/HW5/marvel-wikia-data.csv", header = T)
+#Renaming column 12 to MONTH
+names(Marvel_Wikia)[12] <- "MONTH"
+Marvel_Wikia$MONTH <- format(my(Marvel_Wikia$MONTH),"%B")
+names(DC_Wikia)[12] <- "MONTH"
+DC_Wikia$MONTH <- format(my(DC_Wikia$MONTH),"%B")
+#Displaying headers
+head(DC_Wikia)
+head(Marvel_Wikia)
+```
+
+b. Determine how many missing observations we have for each of the variables in the two data frames and display this in a table.
+```{r}
+#Showing hos many missing obsevations there are for DC and Marvel (is.na)
+table(is.na(Marvel_Wikia))
+table(is.na(DC_Wikia))
+```
+
+c. Has the proportion of Female Characters improved over time (in years)? Investigate this question using tables and plots for both DC and Marvel comics. Is DC or Marvel doing better with regards to Female Characters overall?
+```{r}
+#Marvel female character grouping by year
+FMarvel <- Marvel_Wikia %>%
+  group_by(YEAR) %>%
+  summarize(proportion = sum(SEX == "Female Characters"))
+  FMarvel
+
+#DC females grouped by year
+FDC <- DC_Wikia %>%
+  group_by(YEAR) %>%
+  summarize(proportion = sum(SEX == "Female Characters"))
+  FDC
+
+#Displaying Marvel females character
+ggplot(FMarvel) + geom_line(aes(x=YEAR,y=proportion)) + ggtitle("Marvel Comics Female Characters")
+
+#Displaying DC female characters
+ggplot(FDC) + geom_line(aes(x=YEAR,y=proportion)) + ggtitle("DC Comics Female Characters")
+
+#DC is doing better with regards to female characters overall
+```
+
+d. Do artists prefer to associate different hair color with Good/Neutral/Bad characters?  Determine the proportion of characters in the DC, Marvel, and Combined Datasets that have the different hair color (or bald) for the different alignments.Display this in a table and a stacked relative frequency barplot with Alignment on the x-axis.
+```{r}
+#Creating table for Marvel
+MTable<-table(Marvel_Wikia$HAIR,Marvel_Wikia$ALIGN)
+MTable<-prop.table(MTable)
+
+#Nonclassified characters excluded
+MTable<-MTable[2:nrow(MTable),2:ncol(MTable)]
+
+#Creating plot for Marvel
+barplot(MTable,
+        main="Marvel characters hair color proportion",
+        las=2,
+        col=c("blue","gold","brown"))
+legend("topright", legend =c("Good","Netural","Bad"),fill=c("brown","gold","blue"))
+#Setting parameters
+par(mar=c(18,15,6,6))
+
+#Creating table for DC
+DCTable<-table(DC_Wikia$HAIR,DC_Wikia$ALIGN)
+DCTable<-prop.table(DCTable)
+
+#Nonclassified characters excluded
+DCTable<-DCTable[2:nrow(DCTable),2:ncol(DCTable)]
+
+#Creating plot for Marvel
+barplot(DCTable,
+        main="DC characters hair color proportion",
+        las=2,
+        col=c("blue","gold","brown","grey"))
+legend("topright", legend =c("Good","Netural","Bad"),fill=c("grey","brown","gold","blue"))
+#Setting parameters
+par(mar=c(18,15,6,6))
+
+#Binding dataframes
+MDC<-rbind(Marvel_Wikia,DC_Wikia)
+
+#tables for Marvel and DC
+MergeTab<-table(MDC$HAIR,MDC$ALIGN)
+MergeTab<-prop.table(MergeTab)
+
+#Nonclassified characters excluded
+MergeTab<-MergeTab[2:nrow(MergeTab),2:ncol(MergeTab)]
+
+#Creating plot for Marvel
+barplot(MergeTab,
+        main="DC and Marvel characters hair color proportion",
+        las=2,
+        col=c("blue","gold","brown","grey"))
+legend("topright", legend =c("Good","Netural","Bad"),fill=c("grey","brown","gold","blue"))
+#resetting parameters
+par(mar=c(18,15,6,6)) 
+
+
+```
+
+e. In what month do the most popular or most successful characters get introduced? To investigate this, determine the total number of appearances for all characters who were first introduced in January, February, and so forth. Do this for both DC and Marvel and present the results in a table and barplot. Which months tend to produce the "most popular" characters?
+```{r}
+#Marvel population grouped by Month
+Marvel_pop <- Marvel_Wikia %>%
+  group_by(MONTH) %>%
+  summarize(Everyap = sum(APPEARANCES,na.rm = T))
+
+#DC population grouped by Month
+DC_pop <- DC_Wikia %>%
+  group_by(MONTH) %>%
+  summarize(Everyap = sum(APPEARANCES,na.rm = T))
+
+
+#Displaying Marvel population character
+ggplot(Marvel_pop,aes(x=MONTH,y=Everyap))+geom_bar(stat="identity") + 
+  ggtitle("Marvel Comics Characters")+
+  scale_x_discrete("MONTH") + scale_y_discrete("Apperances")
+
+#Displaying Marvel population character
+ggplot(data = DC_pop,aes(x=MONTH,y=Everyap))+geom_bar(stat="identity") + 
+  ggtitle("DC Comics Characters")+
+   scale_x_discrete("MONTH") + scale_y_discrete("Apperances")
+
+#Marvel produces more characters
+
+
+
+```
+
+
+
+<!-- End of Problem 2 -->
+***
+&nbsp;
+
+
+# Problem 3: [15 pts **Extra Credit**] Recoding Factors
+
+Turn your attention to `adult.csv`. Notice that we have a slew of different categories in the marital status variable.
+
+a. Turn your attention to the Marital variable. What are the unique factor levels? Do you feel as if we could combine some of these levels into more broad levels? Why or why not? If so, what do you suggest?
+
+b. Using `Base R` functions only, convert this column into three categories: `Married`, `FormerlyMarried` and `NeverMarried.` Report a table of these new factor levels reporting number of observations at each level.
+
+c. Repeat the same process as above, but using functions in the `dplyr` package.
+
+
+<!-- End of Problem 3 and the assignment -->
+***
+&nbsp;
+

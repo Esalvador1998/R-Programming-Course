@@ -1,0 +1,383 @@
+---
+title: "CMDA-3654"
+subtitle: "Homework 6"
+author: "Eduardo Salvador"
+date: "Due as a .pdf upload"
+output:
+  pdf_document:
+    highlight: haddock
+    keep_tex: no
+    number_sections: no
+  html_document:
+    df_print: paged
+geometry: margin = 0.5in
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage{xcolor}
+editor_options:
+  chunk_output_type: console
+documentclass: article
+urlcolor: blue
+---
+
+<!-- The above is set to automatically compile to a .pdf file.   -->
+<!-- It will only succeed if LaTeX is installed. -->
+
+<!-- If you absolutely can't get LaTeX installed and/or working, then you can compile to a .html first,  -->
+<!-- by clicking on the arrow button next to knit and selecting Knit to HTML. -->
+
+<!-- You must then print you .html file to a .pdf by using first opening it in a web browser and then printing to a .pdf -->
+
+
+```{r setup, include=FALSE}
+# This is the setup chunk
+#  Here you can set global options for the entire document
+
+library(knitr) # I recommend doing this
+
+# Although you can call functions from a library using the following notation
+#  without loading the entire library.
+knitr::opts_chunk$set(echo = TRUE, 
+                      comment = NA, # Recommended
+                      fig.path = "./figures/",  # Store all figures here in relative path (make the folder first)
+                      fig.align = "center",
+                      fig.width = 7,
+                      fig.height = 7,
+                      message = FALSE, # Turn off load messages
+                      warning = FALSE # Turn off warnings
+                      )
+
+```
+
+\clearpage
+
+```{r include=FALSE}
+# You should not echo this chunk.
+# include=FALSE does more than echo=FALSE, it actually does: echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='hide'
+
+# You should set your working directory at the very beginning of your R Markdown file
+# setwd("~/Dropbox/teaching/SU19/CMDA_3654/homework/homework1/")
+
+# In linux ~/ is shorthand for /home/username/
+# You should type things out properly for your system
+# Mac: /Users/username/Documents/CMDA3654/Lectures/Lecture_03/.../
+# Windows: C:/Users/username/Documents/etc/Lecture/Lecture_03/.../
+
+
+```
+
+<!-- ---------------------------------------------------------------------------------------------------- -->
+<!-- ---------------- Homework Problems start below these lines ----------------------------------------- -->
+<!-- ---------------------------------------------------------------------------------------------------- -->
+
+
+
+
+***
+
+# Instructions:
+
+**Delete the Instructions section from your write-up!!**
+
+I have given you this assignment as an .Rmd (R Markdown) file.  
+
+* Change the name of the file to: `Lastname_Firstname_CMDA_3654_HW6.Rmd`, and your output should therefore match but with a `.pdf` extension.
+
+* You need to edit the R Markdown file by filling in the chunks appropriately with your code.  Output will be generated automatically when you compile the document.  
+
+* You also need to add your own text before and after the chunks to explain what you are doing or to interpret the output.
+
+* Feel free to add additional chunks if needed.  I **will not** be providing assignments to you like this for the entire semester, just long enough for you to learn how to do it for yourself.
+
+**Required: The final product that you turn in must be a .pdf file.**  
+
+* You can Knit this document directly to a PDF if you have LaTeX installed (which is preferred).
+
+* If you absolutely can't get LaTeX installed and/or working, then you can compile to a .html first, by clicking on the arrow button next to knit and selecting Knit to HTML.
+
+* You must then print you .html file to a .pdf by using first opening it in a web browser and then printing to a .pdf
+
+***
+
+
+
+
+
+
+# Problem 1: [30 pts]  Exploring Relationships between variables.
+
+Load the `DatasaurusDozen.tsv` file into R.
+
+This data consists of x and y observations for **13 sub-datasets** that have the following names:
+
+`dino`, `away`, `h_lines`, `v_lines`, `x_shape`, `star`, `high_lines`, `dots`, `circle`, `bullseye`, `slant_up`, `slant_down`, `wide_lines`
+
+a. Use `dplyr` functions to summarize each dataset in the following way:  Compute the mean for x, mean for y, sd for x, sd for y, and the correlation coefficient between x and y.  **Please round your answers to 2 decimal places.**  The answers should be returned automatically in a tibble.  Use `kable()` or `pandoc.table()` (use results='asis' in chunk definition if using `pandoc.table()`) or some other function to make nicely formatted table of your results.
+```{r}
+library(tidyverse)
+library(dplyr)
+#Reading the file
+dinof<-read.table("/Users/eduardosalvador/Desktop/FINAL\ Spring\ Semester\ 2021/CMDA\ /Assignments/HW6/DatasaurusDozen.tsv",header = T)
+#Looking at the first 6 rows of dataframe
+head(dinof) 
+#Using dplyr to summerize mean,sd and correlation
+dinof %>%
+  group_by(dinof$dataset) %>%
+  summarise("x_mean"=mean(x),"y_mean"=mean(y),"x_sd"=sd(x),"y_sd"=sd(y),"correlation_coef"=round(cor(x,y),2))
+
+```
+
+b. What does the numerical summaries tell you about the data in the 12 different data sets?  In particular, does the correlation coefficient provide you with much information about the relationship between x and y?
+```{r}
+## The 12 different data sets have the same mean for x and y. Furthermore, they also have the same standard diviation for x and y. On another note, the correlation coefficient does not provide much information about the relationship between x and y.
+```
+
+c. Now make a basic scatterplot of x and y for the 13 different datasets.  Use a different color for each dataset.  My best advice is to simply use `ggplot()` with `facet_wrap()`, as this can be done in a singe line.
+```{r}
+#Created scatterplot using ggplot (to color everything, use color function)
+ggplot(dinof,aes(x,y,color=dinof$dataset))+facet_wrap(vars(dinof$dataset))+ggtitle("Basic Scatterplot for 13 datasets")+geom_point()
+```
+
+
+d. How does your interpretation about the relationships between x and y change after seeing the plots?
+```{r}
+##The points on each of the graphs appears to match the tittle of the dataset. 
+```
+
+e. What lesson can be learned here?
+```{r}
+##That some graphs are useless in the sense of making sense of the data since, even tho the mean and sd are the same, the graphs are totally different. And that a simple correlation can be useless at times.
+```
+
+
+<!-- End of Problem 1 -->
+***
+&nbsp;
+
+
+# Problem 2: [30 pts] Linear Regression
+
+Consider the `mtcars` dataset. Say we want to build a linear regression model that predicts `mpg`, using any subset of the other variables as predictors.
+
+a. Begin by creating a scatterplot matrix between mpg and all other predictors. Report the correlations as well in either the upper or lower half of the scatterplot matrix.
+```{r}
+library(GGally)
+#Create scatterplot with ggpairs
+ggpairs(mtcars)+ggtitle("Scatterplot Matrix")
+```
+
+b. What are the three variables most highly correlated with mpg?
+```{r}
+##The variables most highly correlated with mpg are wt (.868), then cyl (.852) and displacement (.848)
+```
+
+c. Fit three simple linear regression models using your previous three variables/predictors. Report summaries for the models. Which model would you choose and why?
+```{r}
+#Simple linear regression with mpg~wt
+slrmwt<-lm(mpg ~ wt,data=mtcars)
+summary(slrmwt)
+#Simple linear regression with mpg~cyl
+slrmcyl<-lm(mpg ~ cyl ,data=mtcars)
+summary(slrmcyl)
+#Simple linear regression with mpg~disp
+slrmdisp<-lm(mpg ~ disp,data=mtcars)
+summary(slrmdisp)
+
+##I would use the simple linear regression model with the variable wt since it gave the largest R^2 (0.7528) out of the three most correlated variables.
+```
+
+d. Create a multiple linear regression (MLR) model using `stepAIC()` to identify the best subset of predictors from all of the variables in `mtcars` (obviously `mpg` is still the response variable). Report these predictors, and a summary of the model these predictors produced.
+```{r}
+library(MASS)
+#Null model
+modfit0<-lm(mpg~1,data=mtcars)
+#Model with all of the predictors variables (a . calls for all of the variables in the dataframe)
+modfit_full<-lm(mpg~.,data=mtcars)
+#Using stepwise regression
+modelfit_best<-stepAIC(modfit0,trace=0,scope = list(lower=modfit0,upper=modfit_full),direction = "both")
+summary(modelfit_best)
+
+##The best subset of predictors are wt, cyl and hp with a Multiple R^2 of 0.8431 and Adjusted R^2 of 0.8263 which is way better than the simple linear regression model.
+```
+
+e. Compare your MLR model to your three simple linar regression models earlier. Are any of those predictors in your MLR model? Are the coefficients the same for those predictors? If not, explain what may have caused the change.
+```{r}
+##The predictors/variables wt and cyl were in my simple linear regression model but, hp wasn't, instead I thought it was going to give me displacement since it has a higher correlation but, I was wrong. The coefficients are different because ??????
+```
+
+
+<!-- End of Problem 2 -->
+***
+&nbsp;
+
+# Problem 3: [30 pts] More Linear Regression
+
+*Sometimes your dataset is rather small, but you see that a simple linear regression is not appropriate so you try harder to fit a more complicated model. This is an example of such a situation.*
+
+A poultry scientist was studying various dietary additives to increase the rate at which chickens gain weight. One of the potential additives was studied by creating a new diet that consisted of a standard basal diet supplemented with varying amounts of the additive (0, 20, 40, 60, 80, and 100 grams). There were 60 chicks available for the study. Each of the six diets was randomly assigned to 10 chicks. At the end of 4 weeks, the feed efficiency ratio, feed consumed (gm) to weight gain (gm), was obtained for the 60 chicks. The experiment was also concerned with the effects of high levels of copper in the chick feed. Five of the 10 chicks in each level of the feed additive received 400 ppm of copper, while the remaining five chicks received no copper.
+
+The data is contained in the `chicken.csv` data file.
+
+a. In order to explore the relationship between feed efficiency ratio (FER) and feed additive (A), plot the FER versus A.
+```{r}
+#Read the file
+chicken_df<-read.csv("/Users/eduardosalvador/Desktop/FINAL\ Spring\ Semester\ 2021/CMDA\ /Assignments/HW6/chicken.csv",header = T)
+#Look at table
+head(chicken_df)
+#Used ggplot to plot FER vs Additive
+ggplot(chicken_df,aes(Additive,FER)) + ggtitle("FER versus Additive")+ geom_point()
+```
+
+b. What type of regression appears most appropriate?
+```{r}
+##The regression type most appropiate for FER versus Additive appears to be the Polynomial Regression
+```
+
+c. Fit first-order, quadratic, and cubic regression models to the data. Which regression equation provides the best fit to the data? Justify your answer using evidence based upon plots and relevant summaries.
+```{r}
+library(pander)
+library(olsrr)
+#First-orfer regression model
+f_model<-lm(Additive~FER,data=chicken_df)
+summary(f_model)
+f_model%>%summary%>% pander()
+ols_plot_resid_fit(f_model)+theme_bw()
+ols_plot_resid_qq(f_model)
+ols_test_normality(f_model)
+
+#Quadratic regression model
+q_model<-lm(Additive~FER+I(FER^2),data=chicken_df)
+summary(q_model)
+q_model%>%summary%>% pander()
+ols_plot_resid_fit(q_model)+theme_bw()
+ols_plot_resid_qq(q_model)
+ols_test_normality(q_model)
+#Cubic regression model
+c_model<-lm(Additive~FER+I(FER^2)+I(FER^3),data=chicken_df)
+summary(c_model)
+c_model%>%summary%>% pander()
+ols_plot_resid_fit(c_model)+theme_bw()
+ols_plot_resid_qq(c_model)
+ols_test_normality(c_model)
+
+##I think cubic model provides the best fit since it has the least residual error and the line has the closest points 
+```
+
+d. Is there anything peculiar about any of the data values? Provide an explanation of what may have happened. (Hint: Look at regression diagnostics like plots of the residuals versus the fitted values (or x), plot the leverages, or plot some measure of influence.)
+```{r}
+##There appears to be a pattern aliggning in the residuals vs fitted values which is very peculiar since it is a correctly fitted model.
+```
+
+e. Using your best polynomial model from (b) & (c). Fit a new model that includes the linear addition of copper and display the estimate table. Does Copper provide a significant improvement to the fit?  Carry out an F-test that compares the Full model that contains Copper and the reduced model that has your polynomial model fit on the additive only. Discuss the results.
+```{r}
+#First-order regression model using Addivive, FER and Copper
+new_modfit<-lm(Additive~FER+Copper,data=chicken_df)
+summary(new_modfit)
+summary(f_model)
+new_modfit%>%summary%>% pander()
+ols_plot_resid_fit(new_modfit)+theme_bw()
+ols_plot_resid_qq(new_modfit)
+ols_test_normality(new_modfit)
+
+#Copper does cluster the points more in the middle and at the ends on the line but statistically speaking, it decreases the Shapiro-Wilk test by 0.007. For the F-Test, with Copper it is 176.6 and without Copper is 355.6 for a first-order regression model.
+```
+
+<!-- End of Problem 3 -->
+***
+&nbsp;
+
+
+
+# Problem 4: [10 pts] Linear Regression with Indicator Variables
+
+Consider the data in `smoking_birthweight.csv`.  This data contains 3 variables.  The birth weight of a baby (`Weight`), the length of gestation (`Gestation`) in weeks, and the smoking status of the mother (`Smoke`).  The smoking status of the mother in this case is coded as `yes` or `no`.  This is a categorical variable (aka factor) with 2 categories (a binary variable).  We could have coded the levels of this factor as an indicator variable using `TRUE` or `FALSE`, or equivalently `1` or `0`, respectively.
+
+a. Fit a first-order regression model with birth weight as the response variable and the gestation and smoking status as predictors.  Write down the fitted regression model equation and interpret the regression coefficients.  If you can do this, you should have no problem handling the extra credit.
+```{r}
+library(dplyr)
+##Read the file
+smokebw<-read.csv("/Users/eduardosalvador/Desktop/FINAL\ Spring\ Semester\ 2021/CMDA\ /Assignments/HW6/smoking_birthweight.csv",sep = "\t")
+
+#Looking at first six rows
+head(smokebw)
+#Looking for person that is smoker
+smokebw<-smokebw %>% mutate(mystatus=if_else(Smoke=="yes",1,0))
+
+#Making a fitted generalized linear model for weight with mystatus and gestation
+glm_smoke<-glm(Weight~mystatus+Gestation,data=smokebw)
+
+summary(glm_smoke)
+
+## My interpretation is that if mother were to smoke, the change in weight decreases by 244.544 with 41.982 error variable and for every 1 unit change of Gestation, the change is weight increases by 143.100 with 9.128 of error variable.
+```
+
+?glm
+b. Plot the fitted regression lines (yes plural), why are there two?
+```{r}
+library(ggplot2)
+##GGplot to create fitted regression lines
+ggplot(smokebw,aes(x=Gestation,y=Weight,color=Smoke))+theme_bw()+ggtitle("Fitted Regression Lines")+geom_point(aes(color=Smoke),position = position_jitter(height = 0.5,width = 0))+scale_y_continuous(breaks = seq(0,1,by=0.05))+geom_smooth(method = "glm",se=F)
+
+##There are two lines because there is moms that smoke and no smoke
+```
+
+<!-- End of Problem 4 -->
+***
+&nbsp;
+
+
+
+# Problem 5: [15 pts **Extra Credit**] Parameter Interpretation with Indicator Variables
+
+Recall that indicator variables, sometimes called "dummy" variables, are binary variables that indicate whether an event is recognized or not (i.e., `1` if `TRUE` `0` if `FALSE`). Suppose we have a data set of reported salaries and highest achieved education levels. Suppose the variables are as follows: `salary`, `noHS`, `highSchoolGrad`, `Assoc`, `Bach`, `Masters`, `Doctorate`, where the levels of education are either a `1` or `0` depending on whether that is the given observation's highest level of achieved education.
+
+- Write down the multiple linear regression model. Specify which $\beta_{i}$ are indicator variables.
+```{r}
+##salary=$\beta_{0}$+$\beta_{1}$noHS+$\beta_{2}$highSchoolGrad+$\beta_{3}$Assoc+$\beta_{4}$Bach+$\beta_{5}$Masters+$\beta_{6}$Doctorate
+```
+
+- Write interpretations for all of your model parameters, that is $\beta_{i}$, for $i \in \{0,1,2,3,4,5 \}$.
+```{r}
+##$\beta_{}$ always increases the salary with each increase in education. For example, for highSchoolGrad, there is an increase of $\beta_{2}$ for salary, for Assoc, there is an increase of $\beta_{3}$ on salary and so on for Bach, Masters and Doctorate. The only decrease is for noHS, there is a decrease of $\beta_{1}$ in salary.
+```
+
+- Now assume we were to add another variable to this data set: an observation's `gender`. Write down this new model, and now interpret $\beta_{0}$.
+```{r}
+##salary=$\beta_{0}$+$\beta_{1}$noHS+$\beta_{2}$highSchoolGrad+$\beta_{3}$Assoc+$\beta_{4}$Bach+$\beta_{5}$Masters+$\beta_{6}$Doctorate+$\beta_{7}$gender
+##$\beta_{0}$ is the salary that it doesn't matter your level of education or gender, it is the lowest amount the country's goverment sets.
+```
+
+
+
+
+<!-- End of Problem 5 and the assignment -->
+***
+&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

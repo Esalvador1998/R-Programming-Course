@@ -1,0 +1,396 @@
+---
+title: "CMDA-3654"
+subtitle: "Homework 3"
+author: "Eduardo Salvador"
+date: "Due as a .pdf upload"
+output:
+  html_document:
+    df_print: paged
+  pdf_document:
+    highlight: haddock
+    keep_tex: no
+    number_sections: no
+geometry: margin = 0.5in
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage{xcolor}
+editor_options:
+  chunk_output_type: console
+documentclass: article
+urlcolor: blue
+---
+
+<!-- The above is set to automatically compile to a .pdf file.   -->
+<!-- It will only succeed if LaTeX is installed. -->
+
+
+```{r setup, include=FALSE}
+# This is the setup chunk
+#  Here you can set global options for the entire document
+
+library(knitr) # I recommend doing this
+
+# Although you can call functions from a library using the following notation
+#  without loading the entire library.
+knitr::opts_chunk$set(echo = TRUE, 
+                      comment = NA, # Recommended
+                      fig.path = "./figures/",  # Store all figures here in relative path (make the folder first)
+                      fig.align = "center",
+                      fig.width = 7,
+                      fig.height = 7,
+                      message = FALSE, # Turn off load messages
+                      warning = FALSE # Turn off warnings
+                      )
+
+```
+
+\clearpage
+
+```{r include=FALSE}
+# You should not echo this chunk.
+# include=FALSE does more than echo=FALSE, it actually does: echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='hide'
+
+# You should set your working directory at the very beginning of your R Markdown file
+# setwd("~/Dropbox/teaching/SU19/CMDA_3654/homework/homework1/")
+
+# In linux ~/ is shorthand for /home/username/
+# You should type things out properly for your system
+# Mac: /Users/username/Documents/CMDA3654/Lectures/Lecture_03/.../
+# Windows: C:/Users/username/Documents/etc/Lecture/Lecture_03/.../
+
+
+```
+
+<!-- ---------------------------------------------------------------------------------------------------- -->
+<!-- ---------------- Homework Problems start below these lines ----------------------------------------- -->
+<!-- ---------------------------------------------------------------------------------------------------- -->
+
+
+
+
+***
+
+# Instructions:
+
+**Delete this Instructions section from your write-up!!**
+
+I have given you this assignment as an .Rmd (R Markdown) file.  
+
+* Change the name of the file to: `Lastname_Firstname_CMDA_3654_HW3.Rmd`, and your output should therefore match but with a `.pdf` extension.
+
+* You need to edit the R Markdown file by adding chunks and filling them in appropriately with your code.  Output will be generated automatically when you compile the document.  
+
+* You also need to add your own text before and after the chunks to explain what you are doing or to interpret the output.
+
+**Required: The final product that you turn in must be a .pdf file.**  
+
+* You MUST Knit this document directly to a PDF, you are not allowed to knit to any other file type and then convert.
+
+## **This assignment is to be done using Base R methods only!**
+**The next assignment is devoted completely to plotting using ggplot2, so the use of ggplot2 is not allowed here.**
+
+
+
+
+***
+
+
+# Problem 1: (30 pts) Basic Summaries and Plotting with `Base R`
+
+Install and load the `MASS` package for this problem, and load the `birthwt` data set that comes installed with `MASS`. This data set contains information on infant birth weight as well as observed risk factors. To find out more about this data set, see the help page `?birthwt`. In the following exercises, be sure to create an appropriate legend when neccesary, and label all axes and plots accordingly.
+?birthwt
+a. Provide univariate summaries for the variables in this data set.
+```{r}
+library(MASS)
+#Univariate summary
+for (i in 1:ncol(birthwt)){
+  cat("variable:",colnames(birthwt[i]),"\n")
+  print(summary(birthwt[,i]))}
+  cat("\n")
+```
+
+b. Create a boxplot of birth weight (`bwt`) by `race`. Notice that the variable race is numerically coded. Make sure to assign the proper factor names when creating your plot.  You should use different colors for each boxplot. Overlay a jittered stripcharts.
+```{r}
+#Create plot
+boxplot(birthwt$bwt~birthwt$race,
+        xlab="Racr",
+        ylab="BTW",
+        main="Birth Weight by Race", 
+        col=c("gold", "grey", "blue"),
+        alpha=0.3)
+stripchart(birthwt$bwt~birthwt$race, vertical=T, data=birthwt,method="jitter",pch=12,add=T)
+
+
+```
+
+c. Create an overlayed density plot of birth weight given the smoking status of the mother, that is, make sure both densities are displayed onto the same plot.  Use different colors and a legend.
+```{r}
+#Creating density plot
+plot(density(birthwt$smoke),                                    
+     main = "Weight comparison smoke status")
+par(new=T)
+plot(density(birthwt$smoke),
+     main="",
+     col="gold")
+legend("topright",c("Smoke","No Smoke"),col=c("blue","purple"))
+    
+```
+
+d. Create a correlogram for all quantitative variables and comment on what you observe.
+```{r}
+library(corrplot)
+round( M <- cor(birthwt[, c("low", "age", "lwt", "race","smoke","ptl","ht","ui","ftv","bwt")]),3)
+corrplot.mixed(M,upper="ellipse",order="AOE")
+```
+
+e. Make a scatterplot matrix using the `pairs()` function for all numeric variables.  Color the points in the scatterplot matrix using different colors depending on race.  A legend might be kinda tricky in this case, but not impossible.  I'll settle for a description of which groups the colors represent.
+```{r}
+#selecting colums to get numbers
+SCol<-birthwt[,c("low", "age", "lwt", "race","smoke","ptl","ht","ui","ftv","bwt")]
+
+#Coloring scatterplot points
+Coloring<-vector()
+Coloring[1:96]<-"gold"
+Coloring[97:122]<-"grey"
+Coloring[123:189]<-"blue"
+
+#Creating graph with legend and to fit
+par(xpd=T)
+pairs(SCol, pch=12, col=Coloring,oma=c(4,5,6,19))
+legend("topright",pch<-12,legend = c("Race 1","Race 2", "Race 3"), col<-c("gold","grey","blue"))
+
+
+```
+
+
+<!-- End of Problem 1 -->
+***
+&nbsp;
+
+
+
+# Problem 2: (30 pts) Census Data
+
+Turn your attention to the `adult.csv` data set..  
+
+a. Provide univariate summaries for the variables in this data set.
+```{r}
+#Read
+adult<-read.csv(file = "/Users/eduardosalvador/Desktop/FINAL\ Spring\ Semester\ 2021/CMDA\ /Assignments/HW3/adult.csv")
+
+#Univariate summary
+for (i in 1:ncol(adult)){
+  cat("variable:",colnames(adult[i]),"\n")
+  print(summary(adult[,i]))
+  cat("\n")
+}
+```
+
+b. Create a bar chart displaying the counts of working class for all United States citizens.
+```{r}
+#Fitting the name of each working class
+par(mar=c(8,7,5,3))
+#las=2 sets the bar horizontally
+barplot(table(adult$workclass),las=2)
+#Fitting back the values
+par(mar=c(5.1,4.1,4.1,2.1))
+#Setting unnecessary label
+legend("topright",c("cool looking graph ;)"))
+```
+
+c. Make a bivariate frequency table for the `workclass` variable as the rows and `race` as the columns.  Show this table.  In a second table, show the same table but with the marginal frequencies added.
+```{r}
+#Creating table
+bivariantet<-table(adult$workclass,adult$race)
+bivariantet
+#Adding margins
+addmargins(bivariantet)
+```
+
+d. Make a three-way frequency table using the `xtabs()` function for the `workclass`, `race`, and `sex` variable (have sex be the 3rd dimension).  Then use `ftable()` to flatten the 3-D table.
+```{r}
+#three-way table
+three_way<-xtabs(~race+workclass+sex,data=adult)
+ftable(three_way)
+```
+
+e. Create a **relative frequency stacked barchart** displaying the counts of `pay` categories with respect to the `marital` category. .
+```{r}
+#Create table
+btable=table(adult$pay, adult$marital)
+
+rfreqtable<-prop.table(btable)
+
+#Boundaries
+par(mar=c(12,8,2,2))
+#Setting it horizontal and adding labels
+barplot(rfreqtable,las=2, density=c(15,30,45),ylim=c(0,2))
+legend("topright",legend=c("0:50k","50K+"),fill=c("grey","blue"))
+
+#Fitting back values
+par(mar=c(5.1,4.1,4.1,2.1))
+```
+
+
+
+<!-- End of Problem 2 -->
+***
+&nbsp;
+
+
+# Problem 3: (20 pts) The `iris` dataset
+
+(**Note:** When we say plot **"a" vs "b"**, by default "a" is on the y-axis, and "b" is on the x-axis.)
+
+a. Plot the Petal Width vs Petal Length with different colors and plot characters for the different classes of plants. Be sure to add a legend.
+```{r}
+library(datasets)
+data("iris")
+
+plot(iris$Petal.Length[1:50],iris$Petal.Width[1:50],
+     main="Petal Width vs Petal Length",
+     ylab="Petal Width",
+     xlab="Petal Length",
+     xlim=c(1,7),
+     pch=12,
+     col="gold",
+     ylim=c(0,5))
+
+points(iris$Petal.Length[51:100],iris$Petal.Width[51:100],
+     main="Petal Width vs Petal Length",
+     ylab="Petal Width",
+     xlab="Petal Length",
+     xlim=c(3,7),
+     pch=12,
+     col="grey",
+     ylim=c(0,5))
+
+points(iris$Petal.Length[101:150],iris$Petal.Width[101:150],
+     main="Petal Width vs Petal Length",
+     ylab="Petal Width",
+     xlab="Petal Length",
+     xlim=c(3,7),
+     pch=12,
+     col="blue",
+     ylim=c(0,5))
+
+legend("topleft",legend=c("Setosa","Versicolor","Virginica"),pch=c(12,13,14),col=c("gold","grey","blue"))
+```
+
+b. Plot the Sepal Width vs Sepal Length with different colors and plot characters for the different classes of plants. Be sure to add a legend.
+```{r}
+plot(iris$Sepal.Length[1:50],iris$Sepal.Width[1:50],
+     main="Sepal Width vs Sepal Length",
+     ylab="Sepal Width",
+     xlab="Sepal Length",
+     xlim=c(1,10),
+     pch=12,
+     col="gold",
+     ylim=c(0,8))
+
+points(iris$Sepal.Length[51:100],iris$Sepal.Width[51:100],
+     main="Sepal Width vs Sepal Length",
+     ylab="Sepal Width",
+     xlab="Sepal Length",
+     xlim=c(1,10),
+     pch=12,
+     col="grey",
+     ylim=c(0,8))
+
+points(iris$Sepal.Length[101:150],iris$Sepal.Width[101:150],
+     main="Sepal Width vs Sepal Length",
+     ylab="Sepal Width",
+     xlab="Sepal Length",
+     xlim=c(1,10),
+     pch=12,
+     col="blue",
+     ylim=c(0,8))
+
+legend("topright",legend=c("Setosa","Versicolor","Virginica"),pch=c(12,13,14),col=c("gold","grey","blue"))
+```
+
+
+c. What proportion of flowers have a Petal Length greater than 4, Petal widths between 1 and 2, and Sepal Widths and Lengths within 0.5 units of their median values?
+```{r}
+
+#Subsetting each variable
+PetalLG4<-subset(iris,Petal.Length>4)
+PetalsWB1_2<-subset(iris,Petal.Width>1 & Petal.Width<2)
+
+#Outputting objects
+cat("Amount of flowers with petal length greater than 4:",nrow(PetalLG4)/nrow(iris))
+cat("Amount of flowers with petal widths between 1 and 2:", nrow(PetalsWB1_2)/nrow(iris))
+
+#Lengths within 0.5 units of their median value
+median(iris$Sepal.Width)
+median(iris$Sepal.Length)
+
+
+```
+
+
+
+d. Observing the plots in (a) and (b), if you had to distinguish between classes by using either petal dimensions or sepal dimensions, which one would you choose: petals or
+sepals, and why?
+```{r}
+#IF I had to distinguish between classes of either petal or sepal, I would chose petal because the plot shows datapoints more spread out than sepal which ultimately makes it easier to distinguish between classes
+```
+
+
+<!-- End of Problem 3 -->
+***
+&nbsp;
+
+
+
+# Problem 4: (20 pts) The `babynames` dataset
+
+Consider the `babynames` data from assignment 1 located within the R library package of the same name..
+
+a. Create a subset of the data with female babies named "Mary" from 1880-2014.  How many observations are in this subset?
+```{r}
+library(babynames)
+Name_Mary<-subset(babynames,year>=1880&year<=2014 & name=="Mary"&sex=="F")
+cat("The amount of names corresponding to Mary is:",nrow(Name_Mary))
+```
+
+
+b. Create a subset of the data with female babies named "Sophia" from 1880-2014.  How many observations are in this subset?
+```{r}
+Name_Sophia<-subset(babynames,year>=1880&year<=2014 & name=="Sophia"&sex=="F")
+cat("The amount of names corresponding to Sophia is:",nrow(Name_Sophia))
+```
+
+c. Construct a plot of the proportion of female babies named "Mary" from 1880-2014. On the same plot, add/overlay a plot of the proportion of female babies named "Sophia" from
+1880-2014.  Use different colors for "Mary" vs "Sophia" and add a legend.
+```{r}
+plot(Name_Mary$prop,Name_Mary$year, main = "Female names proportion",xlab="proportion", ylab ="year",pch=12,col="gold")
+points(Name_Sophia$prop,Name_Sophia$year, main = "Female names proportion",xlab="proportion", ylab ="year",pch=13,col="blue")
+
+legend("topright",legend=c("Mary","Sophia"),col = c("gold","blue"),pch=12)
+```
+
+d. Briefly describe your interpretation of the plot.
+
+```{r}
+#My interpretation of the plot is that for the female name Mary, it seems that the name is being used less since 1880 and for the name Sophia, the plot shows an icrease in usage since 1880 with a peak around 2012
+```
+
+
+
+<!-- End of Problem 4 and the assignment  -->
+***
+&nbsp;
+
