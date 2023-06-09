@@ -1,0 +1,300 @@
+---
+title: "CMDA-3654"
+subtitle: "Homework 7"
+author: "Eduardo Salvador"
+date: "Due as a .pdf upload"
+output:
+  pdf_document:
+    highlight: haddock
+    keep_tex: no
+    number_sections: no
+  html_document:
+    df_print: paged
+geometry: margin = 0.5in
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage{xcolor}
+editor_options:
+  chunk_output_type: console
+documentclass: article
+urlcolor: blue
+---
+
+<!-- The above is set to automatically compile to a .pdf file.   -->
+<!-- It will only succeed if LaTeX is installed. -->
+
+<!-- If you absolutely can't get LaTeX installed and/or working, then you can compile to a .html first,  -->
+<!-- by clicking on the arrow button next to knit and selecting Knit to HTML. -->
+
+<!-- You must then print you .html file to a .pdf by using first opening it in a web browser and then printing to a .pdf -->
+
+
+```{r setup, include=FALSE}
+# This is the setup chunk
+#  Here you can set global options for the entire document
+
+library(knitr) # I recommend doing this
+
+# Although you can call functions from a library using the following notation
+#  without loading the entire library.
+knitr::opts_chunk$set(echo = TRUE, 
+                      comment = NA, # Recommended
+                      fig.path = "./figures/",  # Store all figures here in relative path (make the folder first)
+                      fig.align = "center",
+                      fig.width = 7,
+                      fig.height = 7,
+                      message = FALSE, # Turn off load messages
+                      warning = FALSE # Turn off warnings
+                      )
+
+```
+
+\clearpage
+
+```{r include=FALSE}
+# You should not echo this chunk.
+# include=FALSE does more than echo=FALSE, it actually does: echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='hide'
+
+# You should set your working directory at the very beginning of your R Markdown file
+# setwd("~/Dropbox/teaching/SU19/CMDA_3654/homework/homework1/")
+
+# In linux ~/ is shorthand for /home/username/
+# You should type things out properly for your system
+# Mac: /Users/username/Documents/CMDA3654/Lectures/Lecture_03/.../
+# Windows: C:/Users/username/Documents/etc/Lecture/Lecture_03/.../
+
+
+```
+
+<!-- ---------------------------------------------------------------------------------------------------- -->
+<!-- ---------------- Homework Problems start below these lines ----------------------------------------- -->
+<!-- ---------------------------------------------------------------------------------------------------- -->
+
+
+
+
+***
+
+
+***
+
+
+# Problem 1: [50 pts] Logistic Regression
+
+Hermon Bumpus analyzed various characteristics of some house sparrows that were found on the ground after a severe winter storm in 1898. Some of the sparrows survived and some perished. The data on male sparrows in found in `bumpus.csv` are survival status (`survived`, `perished`), age (`1 = adult`, `2 = juvenile`), the total length from tip of beak to tip of tail (in mm), the alar extent (length from tip to tip of the extended wings, in mm), the weight in grams, the length of the head in mm, the length of the humerus (arm bone, in inches), the length of the femur (thigh bones, in inches), the length of the tibio-tarsus (leg bone, in inches), the breadth of the skull in inches, and the length of the sternum in inches. 
+
+Analyze the data to see whether the probability of survival is associated with physical characteristics of the birds. 
+
+This would be consistent, according to Bumpus, with the theory of natural selection: those that survived did so because of some superior physical traits. Realize that (i) the sampling is from a population of grounded sparrows, and (ii) physical measurements and survival are both random. 
+
+
+a. Assuming that Weight is the only explanatory variable, fit a logistic regression model with Status as the response variable and answer the following questions.  
+```{r}
+library(tidyverse)
+#Reading csv file
+bump<-read.csv("/Users/eduardosalvador/Desktop/FINAL\ Spring\ Semester\ 2021/CMDA\ /Assignments/HW7/bumpus.csv")
+#Creating y variable of people who survived and those who have perished
+bump <-bump %>% 
+  mutate(mystatus=if_else(status=="Survived",1,0))
+#Creating regression model with ggplot
+ggplot(bump,aes(x=weight,y=mystatus))+theme_bw()+ylab("Survived")+ggtitle("Logistic regression model with Status")+
+  geom_smooth(method="glm",method.args=list(family="binomial"))+geom_point(aes(color=status),position=position_jitter(height = 0.05,width = 0))
+
+```
+
+    i. What is the probability a bird that weighs 25 grams survives?  
+```{r}
+#Creating fitting generalized linear model 
+bumpglm<-glm(mystatus~weight,data=bump,family=binomial)
+head(bumpglm)
+summary(bumpglm)
+
+#Use predict function to get probability a bird that weights 25 grams
+predict(bumpglm,newdata = data.frame(weight=25),type="response")
+
+#The probability a bird that weighs 25 grams survives is 67%.
+```
+    
+    ii. What is the probability a bird that weighs 30 grams survives?
+```{r}
+#Use predict function to get probability a bird that weights 30 grams
+predict(bumpglm,newdata = data.frame(weight=30),type="response")
+
+#The probability a bird that weighs 30 grams survives is 19.59%.
+```
+
+    iii. Plot the logistic regression model with a scatterplot of the observations.  Make sure all plot elements make sense.
+```{r}
+#Creating scatter points with plot
+plot(jitter(mystatus, amount = 0.05)~weight,data=bump,pch=19,las=1, main="Logistic regression model with a scatterplot",ylab="Probability of Survival",xlab="Weight")
+#Creating line for regression model with lines function
+ordw<-predict(bumpglm,data.frame(weight=sort(bump$weight)),type = "response")
+lines(ordw~sort(weight),data=bump)
+
+
+```
+
+    iv. Suppose we come up with a classification rule that says we will consider a bird as having survived if the probability of surviving is 60\% or greater.  For what body weights would this be associated with?
+```{r}
+#The body weights would have to be 25.6 or lower.
+```
+
+b. Now consider using all of the physical characteristics as possible predictor variables in a logistic regression with Status as the response. Find the best subset of explanatory variables using `stepAIC()`. State the best model in terms of log-odds.  Use this model for the remaining questions.
+```{r}
+library (MASS)
+#Creating fitting generalized linear model with all the variables
+full_model<-glm(mystatus~age+total_length+alar_extent+weight+head_length+humerus_length+femur_length+tibio_tarsus+skull+sternum,data = bump,family = binomial)
+#Creating fitting generalized linear model with null 
+null_model <- glm(mystatus ~ 1, data = bump, family= binomial)
+#Finding best best subset of exploratory values using stepAIC()
+best_model <- stepAIC(full_model, scope = list(lower = null_model, full_model),trace = 0, direction = "both")
+summary (best_model)
+```
+
+c. Is age group important?  If so, how does the odds of survival change?
+```{r}
+#It is NOT important in this case.
+```
+	
+d. Is total length important?  If so, if the total length is increased from 160 to 165 mm, and assuming everything else is held constant, what is change in odds of survival?
+```{r}
+#total_length is important and the change in odds survival from a total length increaser from 160 to 165 would be exp(-0.6573*5)=3.74% (calculator) based on estimate std.
+```
+	
+e. Plot Status versus $\eta$ the log-odds function and overlay the logistic regression curve.
+		
+```{r}
+#Created ggplot
+ggplot(bump,aes(x=humerus_length, y=as.numeric(mystatus)-1))+theme_bw()+geom_smooth(aes(color=status),method = "glm",method.args=list(family="binomial"),size=0.05,se=F)+geom_point(aes(color=status),position=position_jitter(height=0.5,width=0),size=0.5)
+```
+
+\end{enumerate}
+
+
+<!-- End of Problem 2 -->
+***
+&nbsp;
+
+# Problem 2: [50 pts] Classification using LDA, QDA, and SVM
+
+Load the `wine` dataset from the `rattle` package in R. 
+
+Consider `Type` to be the response variable, and all other variables as features.
+
+a. Describe the dataset in your own words, in 2-3 lines.
+```{r}
+library(rattle)
+data("wine")
+view(wine)
+
+#The wine data set includes 14 variables and 178 obs. Out of those variables, 
+#the first one is type which consists of three types. The rest, are 13 chemical element variables. 
+```
+
+b. Perform classification using LDA (linear discriminant analysis).  Display the Confusion Matrix.  Report the classification error rate.
+```{r}
+library(caret)
+library(klaR)
+#The . allows to put all the variables, would've been beneficial to know earlier
+LINDA<-lda(Type~.,data=wine)
+#Predict value based on the input data
+PLINDA<-predict(LINDA,data=wine)
+#Confusion Matrix using LDA 
+confusionMatrix(PLINDA$class,wine$Type)
+#The classification error rate is equal to 0.
+```
+
+c. Perform classification using QDA (quadratic discriminant analysis).  Display the Confusion Matrix.  Report the classification error rate.
+```{r}
+#Performing QDA on all variables
+quda<-qda(Type~.,data=wine)
+#Predict value based on the input data and creating confusion matrix 
+confusionMatrix(predict(quda)$class,wine$Type)
+#The classification error rate is equal to almost 0, its accuracy is 0.994382
+```
+
+d. Perform classification using SVM (support vector machines).   Display the Confusion Matrix.  Report the classification error rate.
+```{r}
+library(e1071)
+#Creating a support vector machine of all variables in wine data
+SUVM<-svm(Type~.,data=wine)
+#Making confusion Matrix
+confusionMatrix(predict(SUVM),wine$Type)
+#0
+
+```
+
+e. Rank the classification methods in your order of preference for this dataset, and justify your preference. (Hint: Note that the error rates should be calculated by cross-validation)
+```{r}
+#The classification error rate was the same for LDA,and SVM, the QDA was a little higher 
+#but by looking at the cross-validation, it can be cause by randomness in the data. 
+#All 3 methods are good. My preference would be LDA since it is the one I used the most.
+```
+
+
+
+<!-- End of Problem 2 -->
+***
+&nbsp;
+
+# Problem 3: [20 pts **Extra Credit**]: More Logistic Regression
+
+Load the `mtcars` data in R.
+
+a. Describe the variable `am` in one sentence. **We will consider `am` to be the response variable in the following questions.**
+```{r}
+#am variable is described as transmission where 1 is for manual and 0 for automatic
+```
+
+b. Construct a plot of hp (x-axis) and wt (y-axis), with different colors for automatic and manual transmission. From the plot, do you think automatic and manual transmission can be distinguished by weight and horsepower?
+```{r}
+ggplot(mtcars,aes(x=hp,y=wt))+ggtitle("Horsepower vs Weight")+geom_point(aes(color=am))
+
+#By looking at the graph, I can say that cars with more weight and horsepower tend to be automatic.
+```
+
+c. Fit a logistic regression model with `wt` as the only feature. Using this model, explain whether heavier cars are more likely or less likely to have manual transmission. If weight increases by 1000 lbs, what is the change in odds of a car having manual transmission?
+```{r}
+carlrmwt<-glm(am~wt,data=mtcars,family=binomial)
+summary(carlrmwt)
+#Heavier cars are less likkely to have manual transmissions because 
+#if weight increases by 1000 lbs, the change in odds of a car having
+#manual transmission is around 98.21% and the odds in favor of manual transmission is of 0.0178813.
+```
+
+d. Fit a logistic regression model with `hp` as the only feature. Using this model, explain whether cars with higher horsepower are more likely or less likely to have manual transmission. If horsepower increases by 100, what is the change in odds of a car having manual transmission?
+```{r}
+carlrmhp<-glm(am~hp,data=mtcars,family=binomial)
+summary(carlrmhp)
+
+# Higer hp cars have an odds in favor of manual transmission of 0.4441024 
+#which means they are less likely to have manual transmissions and for every 
+#100 increase in hp, the change in odds of a car having manual transmission decreases by 55.59%.
+```
+
+e. If you had to choose between these two models, which one would you choose and why?
+```{r}
+#Because the change of odds, I would chose the weight model since it is way higher 
+#than the change of odds of horsepower.
+```
+
+
+
+
+
+
+<!-- End of Problem 3 and the assignment -->
+***
+&nbsp;

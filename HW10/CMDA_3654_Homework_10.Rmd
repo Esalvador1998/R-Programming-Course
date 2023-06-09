@@ -1,0 +1,192 @@
+---
+title: "CMDA-3654"
+subtitle: "Homework 10"
+author: "Eduardo Salvador"
+date: "Due as a .pdf upload"
+output:
+  pdf_document:
+    highlight: haddock
+    keep_tex: no
+    number_sections: no
+  html_document:
+    df_print: paged
+geometry: margin = 0.5in
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage{xcolor}
+editor_options:
+  chunk_output_type: console
+documentclass: article
+urlcolor: blue
+---
+
+<!-- The above is set to automatically compile to a .pdf file.   -->
+<!-- It will only succeed if LaTeX is installed. -->
+
+<!-- If you absolutely can't get LaTeX installed and/or working, then you can compile to a .html first,  -->
+<!-- by clicking on the arrow button next to knit and selecting Knit to HTML. -->
+
+<!-- You must then print you .html file to a .pdf by using first opening it in a web browser and then printing to a .pdf -->
+
+
+```{r setup, include=FALSE}
+# This is the setup chunk
+#  Here you can set global options for the entire document
+
+library(knitr) # I recommend doing this
+
+# Although you can call functions from a library using the following notation
+#  without loading the entire library.
+knitr::opts_chunk$set(echo = TRUE, 
+                      comment = NA, # Recommended
+                      fig.path = "./figures/",  # Store all figures here in relative path (make the folder first)
+                      fig.align = "center",
+                      fig.width = 7,
+                      fig.height = 7,
+                      message = FALSE, # Turn off load messages
+                      warning = FALSE # Turn off warnings
+                      )
+
+```
+
+\clearpage
+
+```{r include=FALSE}
+# You should not echo this chunk.
+# include=FALSE does more than echo=FALSE, it actually does: echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='hide'
+
+# You should set your working directory at the very beginning of your R Markdown file
+# setwd("~/Dropbox/teaching/SU19/CMDA_3654/homework/homework1/")
+
+# In linux ~/ is shorthand for /home/username/
+# You should type things out properly for your system
+# Mac: /Users/username/Documents/CMDA3654/Lectures/Lecture_03/.../
+# Windows: C:/Users/username/Documents/etc/Lecture/Lecture_03/.../
+
+
+```
+
+<!-- ---------------------------------------------------------------------------------------------------- -->
+<!-- ---------------- Homework Problems start below these lines ----------------------------------------- -->
+<!-- ---------------------------------------------------------------------------------------------------- -->
+
+
+
+
+***
+
+
+
+***
+
+
+# Problem 1: [100 pts] More PCA
+
+Food technicians are interested in comparing pizza doughs from Naples, made with traditional methods, with doughs from other places. Even though they taste different, previous research has not found good univariate characteristics to distinguish between the different types of doughs. Therefore, the food technician collected a multivariate data set.
+
+Doughs from six restaurants are investigated, with five samples from each restaurant. The first four restaurants are famous Naples restaurants and the last two are from other Italian cities. For each dough two mechanical test (measuring pressure load and deformation volume) and four microbiological/chemical tests (counting the bacteria in the dough, counting the yeast, measuring pH and measuring total titratable acidity) are performed. The data is given in `doughs.csv`.
+
+a. Produce a principal component analysis object called myPCAfit for the first 6 columns of the doughs dataset only (the last column is just a restaurant ID). Remember that you have to do either `scale. = TRUE` if using `prcomp()` or `cor = TRUE` if using `princomp()`.
+```{r}
+#Reading csv file first 6 columns
+doughs<-read.csv("/Users/eduardosalvador/Desktop/FINAL\ Spring\ Semester\ 2021/CMDA\ /Assignments/HW10/doughs.csv")
+doughs[,1:6]
+
+#using princomp to standarize the data
+myPCAfit<-prcomp(doughs[,-7],scale=T)
+myPCAfit
+
+
+```
+
+  i. Plot an associated screeplot using `screeplot(myPCAfit, type = "lines")`. You can use the elbow method to determine how many principal components seem sufficient for capturing the majority of the variation of the data.
+```{r}
+#Plotting screeplot
+screeplot(myPCAfit, type="lines")
+```
+
+  ii. Construct a biplot for PC2 versus PC1. Based upon the loadings and the results of seen in biplot can you determine which variables are the most important for PC1? What about PC2?
+```{r}
+biplot(myPCAfit)
+```
+  
+  The function `biplot(myPCAfit)` will easily make this plot for you.
+
+  Additionally if you install and enable the `ggfortify` library then you can also make this plot doing
+  
+```{r eval=FALSE}
+library(ggfortify)
+autoplot(myPCAfit, loadings = TRUE, loadings.label = TRUE)
+```
+
+b. Find the first four principal components of the data (don’t forget to scale the data – it’s an option in the R functions). Do they seem to be sufficient to describe most of the variation in the data set (specifically report how much variation they describe individually and together)?
+```{r}
+#Using summary function to find the four principal principal components
+summary(myPCAfit)
+
+#PC1 has 33% variation, PC2 has  25%, PC3 has 19% and PC4 has around 12% variation. In total,
+#all PC's together have around 91% variation suggesting that it is sufficient to describe most of the variations.
+```
+
+c. Use `grid.arrange()` to plot scatter plots of the first three principal components versus each other. Judging from the plots, can the first three PCs be used to discriminate doughs from Naples and doughs from other places? Does this agree with your conclusion in (a)?
+```{r}
+library(gridExtra)
+library(tidyverse)
+
+#Making changes to doughs dataframe using mutate
+mdoughs<-mutate(doughs,Naple=
+                  case_when(Restaurant==1~1,
+                            Restaurant==2~1,
+                            Restaurant==3~1,
+                            Restaurant==4~1,
+                            Restaurant==5~0,
+                            Restaurant==6~0))
+
+#Assigning first three principal components to mdoughs variable
+mdoughs$PC1<-myPCAfit$x[,1]
+mdoughs$PC2<-myPCAfit$x[,2]
+mdoughs$PC3<-myPCAfit$x[,3]
+
+#Using qplot to wrap for creating a number of different types of plots 
+#Assigning variable for PC1 vs PC2
+scp1<-qplot(PC1,PC2,data=mdoughs,col=Naple)
+#Assigning variable for PC1 vs PC3
+scp2<-qplot(PC1,PC3,data=mdoughs,col=Naple)
+#Assigning variable for PC1 vs PC2
+scp3<-qplot(PC2,PC3,data=mdoughs,col=Naple)
+
+#Using grid.arrange to plot scatter plots 
+grid.arrange(scp1,scp2,scp3)
+
+#Judging from the plots, the first 3 can be used to discriminate doughs from Naples and others
+#It does agree
+
+```
+
+
+Hint: You will need to use ggplot multiple times to get plot objects p1, p2, etc for plotting the principal components versus each other and you need to be plotting the component scores for the different restaurant. You need to colorize the restaurants from Naples to be the same color and the restaurants that aren’t from Naples a different color.  
+
+d. If you had to perform a specific statistical learning method to classify the doughs based upon these features, which method would it be and why?
+```{r}
+#If I had to perform a specific statistical method to classify the doughs based upon the features,
+#I would use K means clustering because it can divide the dataset into non-overlapping data points.
+```
+
+
+
+
+<!-- End of Problem 1 and the assignment -->
+***
+&nbsp;

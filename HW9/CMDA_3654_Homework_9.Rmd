@@ -1,0 +1,413 @@
+---
+title: "CMDA-3654"
+subtitle: "Homework 9"
+author: "Eduardo Salvador"
+date: "Due as a .pdf upload"
+output:
+  pdf_document:
+    highlight: haddock
+    keep_tex: no
+    number_sections: no
+  html_document:
+    df_print: paged
+geometry: margin = 0.5in
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage{xcolor}
+editor_options:
+  chunk_output_type: console
+documentclass: article
+urlcolor: blue
+---
+
+<!-- The above is set to automatically compile to a .pdf file.   -->
+<!-- It will only succeed if LaTeX is installed. -->
+
+<!-- If you absolutely can't get LaTeX installed and/or working, then you can compile to a .html first,  -->
+<!-- by clicking on the arrow button next to knit and selecting Knit to HTML. -->
+
+<!-- You must then print you .html file to a .pdf by using first opening it in a web browser and then printing to a .pdf -->
+
+
+```{r setup, include=FALSE}
+# This is the setup chunk
+#  Here you can set global options for the entire document
+
+library(knitr) # I recommend doing this
+
+# Although you can call functions from a library using the following notation
+#  without loading the entire library.
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = NA, # Recommended
+                      fig.path = "./figures/",  # Store all figures here in relative path (make the folder first)
+                      fig.align = "center",
+                      fig.width = 7,
+                      fig.height = 7,
+                      message = FALSE, # Turn off load messages
+                      warning = FALSE # Turn off warnings
+                      )
+
+```
+
+\clearpage
+
+```{r include=FALSE}
+# You should not echo this chunk.
+# include=FALSE does more than echo=FALSE, it actually does: echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='hide'
+
+# You should set your working directory at the very beginning of your R Markdown file
+# setwd("~/Dropbox/teaching/SU19/CMDA_3654/homework/homework1/")
+
+# In linux ~/ is shorthand for /home/username/
+# You should type things out properly for your system
+# Mac: /Users/username/Documents/CMDA3654/Lectures/Lecture_03/.../
+# Windows: C:/Users/username/Documents/etc/Lecture/Lecture_03/.../
+
+
+```
+
+<!-- ---------------------------------------------------------------------------------------------------- -->
+<!-- ---------------- Homework Problems start below these lines ----------------------------------------- -->
+<!-- ---------------------------------------------------------------------------------------------------- -->
+
+
+
+
+***
+
+
+
+***
+?scale
+
+# Problem 1: [50 pts] k-means clustering
+
+Consider the Hotdog dataset shown in `hotdogs.csv`. Load in the data but ignore the first column as we’ll pretend we know nothing other than the `Sodium` and `Calorie` content of the hotdogs.
+
+a. Carry out K-means clustering with 2, 3, 4, 5 clusters. Don’t forget to scaled the data first using: 
+```{r eval=FALSE}
+#Loading libraries and reading csv file
+library(cluster)
+library(tidyverse)
+hotdogs<-read.csv("/Users/eduardosalvador/Desktop/FINAL\ Spring\ Semester\ 2021/CMDA\ /Assignments/HW9/hotdogs.csv")
+hotdogs.scaled <- scale(hotdogs [, 2:3])
+#Using kmeans function to get kmean for 2,3,4,5 clusters
+kmeans2<-kmeans(hotdogs.scaled,centers=2,nstart = 25)
+kmeans2
+kmeans3<-kmeans(hotdogs.scaled,centers=3,nstart = 25)
+kmeans3
+kmeans4<-kmeans (hotdogs.scaled,centers=4,nstart = 25)
+kmeans4
+kmeans5<-kmeans (hotdogs.scaled,centers=5,nstart = 25)
+kmeans5
+```
+
+&nbsp;
+
+b. Plot the clusters from part (a) using `ggplot()` and assigning different colors and plot characters to the clusters found using `kmeans()`.
+
+**Hint:** If `km.result <- kmeans(....)`, then the cluster assignments are in `km.result$cluster`, then simply add this to a new data.frame:
+```{r eval=FALSE}
+#Converting to scaled and dataframe
+hotdogs2.scaled <- cbind(hotdogs.scaled, "cluster" = as.factor(kmeans2$cluster))
+hotdogs2_df<-data.frame(hotdogs2.scaled)
+
+hotdogs3.scaled <- cbind(hotdogs.scaled, "cluster" = as.factor(kmeans3$cluster))
+hotdogs3_df<-data.frame(hotdogs3.scaled)
+
+hotdogs4.scaled <- cbind(hotdogs.scaled, "cluster" = as.factor(kmeans4$cluster))
+hotdogs4_df<-data.frame(hotdogs4.scaled)
+
+hotdogs5.scaled <- cbind(hotdogs.scaled, "cluster" = as.factor(kmeans5$cluster))
+hotdogs5_df<-data.frame(hotdogs5.scaled)
+#Creating ggplot for kmean cluster 2
+ggplot(hotdogs2_df,aes(x=Sodium,y=Calories,color=cluster))+theme_bw()+geom_point()
+
+#Creating ggplot for kmean cluster 3
+ggplot(hotdogs3_df,aes(x=Sodium,y=Calories,color=cluster))+theme_bw()+geom_point()
+
+#Creating ggplot for kmean cluster 4
+ggplot(hotdogs4_df,aes(x=Sodium,y=Calories,color=cluster))+theme_bw()+geom_point()
+
+#Creating ggplot for kmean cluster 5
+ggplot(hotdogs5_df,aes(x=Sodium,y=Calories,color=cluster))+theme_bw()+geom_point()
+```
+and then use `ggplot()` accordingly to make the plot.
+
+&nbsp;
+
+c. Install and eanble the following R libraries: `cluster`, `NbClust`, `factoextra`. Then use the `fviz_cluster()` function to vizualize the clusters you made in part (a). Here is an example of how to use it.
+
+```{r eval=FALSE}
+library(ggplot2)
+library(factoextra)
+library(cluster)
+library(NbClust)
+fviz_cluster(kmeans2, data = hotdogs2.scaled)
+fviz_cluster(kmeans3, data = hotdogs3.scaled)
+fviz_cluster(kmeans4, data = hotdogs4.scaled)
+fviz_cluster(kmeans5, data = hotdogs5.scaled)
+```
+
+&nbsp;
+
+**Determining the optimal number of clusters.**
+
+Recall that the basic idea behind partitioning methods, such as k-means clustering, is to define clusters such that the total within-cluster variation or total within-cluster sum of squares is minimized: That is,
+$$
+minimize \left( \sum_{i=1}^{k} W(C_{k})  \right)
+$$
+There are a number of methods that we can use to determine the optimal number of clusters that should be used. One such method is called the Elbow Method which plots the total within-cluster sum of squares versus number of clusters.
+
+We can obtain the total within-cluster sum of squares using `km.result$tot.withinss`.
+
+The elbow method suggest that you find the "elbow" of this plot, where the total within-cluster sum of squares essentially stops reducing signficantly as the number of clusters grows.
+
+Thankfully I can save you from this the long way by telling you about a function that can do this automatically.
+
+&nbsp;
+
+d. Use the function `fviz_nbclust(hotdogs.scaled, kmeans, method = "wss")` to produce a plot using the Elbow method. Using this plot, determine how many clusters you think should be used.
+```{r}
+#Using function to produce a plot using the Elbow method
+
+#fviz_nbclust(hotdogs2.scaled, kmeans, method = "wss")
+
+#For some reason it didn't let me knit using fviz_nbclust function but. plot did come out
+
+#I believe I should use 4 clusters since the line after 4 becomes increasingly similar.
+```
+
+**Discussion:** There are other methods for determining the optimal number of clusters that are more sophisticated such as the average silhouette method and the gap statistic method, but these are beyond the scope of this course.
+
+
+
+<!-- End of Problem 1 -->
+***
+&nbsp;
+
+
+
+
+# Problem 2: [50 pts] Hierarchical Clustering.
+
+Consider the `mtcars` dataset.
+
+a. Using Euclidean distance as the dissimilarity measure, perform hierarchical clustering on the data, with (i) Complete Linkage, (ii) Average Linkage, and (iii) Single Linkage. Don’t forget that you need
+to scale the data and compute the distances before using the `hclust()` function.
+```{r}
+#Scaling mt cars data
+mtcars.scaled<-scale(mtcars)
+#Get distance mtcars
+dist.mtcars<-dist(mtcars.scaled)
+
+#Performing hierarchical clustering with Complete Linkage
+complete.mtcars<-hclust(dist.mtcars)
+
+#Performing hierarchical clustering with Average Linkage
+average.mtcars<-hclust(dist.mtcars,method = "average")
+
+#Performing hierarchical clustering with Single Linkage
+single.mtcars<-hclust(dist.mtcars,method = "single")
+
+```
+
+&nbsp;
+
+b. For all three methods in (a), cut the hierarchical clustering tree at 4 clusters and report the two-way table of the car name and the cluster it belongs to.
+```{r}
+#Cutting the complete linkage tree at 4 clusters
+complete.cut<-cutree(complete.mtcars,4)
+#Reporting two-way table of the car name and the cluster
+complete.table<-table(rownames(mtcars),complete.cut)
+
+#Cutting the average linkage tree at 4 clusters
+average.cut<-cutree(average.mtcars,4)
+#Reporting two-way table of the car name and the cluster
+average.table<-table(rownames(mtcars),average.cut)
+
+#Cutting the single linkage tree at 4 clusters
+single.cut<-cutree(single.mtcars,4)
+#Reporting two-way table of the car name and the cluster
+single.table<-table(rownames(mtcars),single.cut)
+
+#Displaying tables
+complete.table
+average.table
+single.table
+```
+
+&nbsp;
+
+c. We can plot the dendrograms easily enough by doing the following:
+
+```{r eval=FALSE}
+plot(complete.mtcars, labels = rownames(mtcars),
+     main = "Cluster Dendrogram (Complete Linkage)")
+```
+
+Where the above would plot the dendrogram for the Complete Linkage case. Provide this plot and repeat the above for the other 2 cases from part (a). Alternatively we can use the following library that makes use of `ggplot2`, called `ggdendro`.
+
+```{r eval=FALSE}
+library(ggplot2)
+library(ggdendro)
+# Vertical
+ggdendrogram(complete.mtcars) + labs(title = "Cluster Dendrogram (Complete Linkage)")
+# or horizontal with a different theme
+ggdendrogram(complete.mtcars, rotate = T, theme_dendro = F) + 
+  labs(title = "Cluster Dendrogram (Complete Linkage)")
+
+# Vertical Average Linkage
+ggdendrogram(average.mtcars) + labs(title = "Cluster Dendrogram (Average Linkage)")
+# or horizontal with a different theme Average Linkage
+ggdendrogram(average.mtcars, rotate = T, theme_dendro = F) + 
+  labs(title = "Cluster Dendrogram (Average Linkage)")
+
+# Vertical Single Linkage
+ggdendrogram(single.mtcars) + labs(title = "Cluster Dendrogram (Single Linkage)")
+# or horizontal with a different theme Single Linkage
+ggdendrogram(single.mtcars, rotate = T, theme_dendro = F) + 
+  labs(title = "Cluster Dendrogram (Single Linkage)")
+
+```
+
+Some alternative tools for plotting & customizing dendrograms can be found here: http://www.sthda.com/english/wiki/beautiful-dendrogram-visualizations-in-r-5-must-known-methods-unsupervised-machine-learning
+
+Section 5 has some really cool examples of how to colorize clusters, etc.
+
+Another awesome example can be found here: https://www.r-graph-gallery.com/340-custom-your-dendrogram-with-dendextend/
+
+&nbsp;
+
+d. Use the elbow method to determine the optimal number of clusters that you should use. This works the same basic way as in problem 1, but the call is slightly different because it needs to use the `hcut()` function (named without the ()) as an option as seen below.
+
+```{r eval=FALSE}
+fviz_nbclust(mtcars.scaled, hcut, method = "wss")
+```
+
+&nbsp;
+
+e. Add colored rectangles around the clusters you have determined in part (d) to the dendrogram in part (c). You can simply run the following line after the plot in (c) if you used the first method (other methods required other functions).
+
+```{r eval=FALSE}
+library(dendextend)
+
+#Adding plot to dendrogramof complete linkage
+plot(complete.mtcars,labels=rownames(mtcars),main="Cluster Dendrogram (Complete Linkage)")
+rect.hclust(complete.mtcars, 
+            k = 4, # replace with whatever you decided based upon (d)
+            border = c("red","blue","purple","magenta")
+            )
+
+#Adding plot to dendrogramof average linkage
+plot(average.mtcars,labels=rownames(mtcars),main="Cluster Dendrogram (Average Linkage)")
+rect.hclust(average.mtcars, 
+            k = 4, # replace with whatever you decided based upon (d)
+            border = c("red","blue","purple","magenta")
+            )
+
+#Adding plot to dendrogramof complete linkage
+plot(single.mtcars,labels=rownames(mtcars),main="Cluster Dendrogram (Single Linkage)")
+rect.hclust(single.mtcars, 
+            k = 4, # replace with whatever you decided based upon (d)
+            border = c("red","blue","purple","magenta")
+            )
+```
+
+&nbsp;
+
+f. Use `cutree()` to obtain the cluster assignments using your decision in (d). Recode this as a factor object. Plot the `mpg` versus `wt` and use the different colors according to your cluster assignment.
+```{r}
+library(ggplot2)
+#Using cutree() to obtain the cluster assignments for every linkage and converting to dataframe
+comp.cluster.mtcars <- cbind(mtcars.scaled, "cluster" = as.factor(cutree(complete.mtcars,h=4)))
+comp.cluster.mtcars_df<-data.frame(comp.cluster.mtcars)
+
+av.cluster.mtcars <- cbind(mtcars.scaled, "cluster" = as.factor(cutree(average.mtcars,h=4)))
+av.cluster.mtcars_df<-data.frame(comp.cluster.mtcars)
+
+sing.cluster.mtcars <- cbind(mtcars.scaled, "cluster" = as.factor(cutree(single.mtcars,h=4)))
+sing.cluster.mtcars_df<-data.frame(comp.cluster.mtcars)
+
+#Plotting mpg vs wt using different colors for complete linkage
+ggplot(comp.cluster.mtcars_df,aes(x=mpg,y=wt,color=cluster))+theme_bw()+geom_point()
+
+#Plotting mpg vs wt using different colors for average linkage
+ggplot(av.cluster.mtcars_df,aes(x=mpg,y=wt,color=cluster))+theme_bw()+geom_point()
+
+#Plotting mpg vs wt using different colors for single linkage
+ggplot(sing.cluster.mtcars_df,aes(x=mpg,y=wt,color=cluster))+theme_bw()+geom_point()
+```
+
+***
+
+**Discussion:** While you can see some clustering that makes sense, some of the clusters seem to intermixed with each other. Remember, the clustering was determined not using only the `mpg` and `wt` variables alone, but using all of the information from all of the variables in the dataset. So the clusters are formed in multidimensional space. This can be difficult to visualize when the number of dimensions is bigger than 3.
+
+One solution is to rotate the multidimensional variable coordinate system into the principal component coordinate system as we will show in the next problem. This means that if most of the variation is in the first 2 principal components, it might be possible to more easily see the clusters in higher dimensional space using the lower dimensional representation.
+
+
+<!-- End of Problem 2 -->
+***
+&nbsp;
+
+
+
+
+
+# Problem 3: [15 pts **Extra Credit**] PCA + Hierarchical Clustering.
+
+Consider the `mtcars` dataset once again.
+
+a. Use PCA to rotate the observations from the `mtcars` dataset into a new coordinate system using the principal components. Remember that you have to do either `scale. = TRUE` if using `prcomp()` or `cor = TRUE` if using `princomp()`. We want the component scores which will either be `pca.result$x` if you used `prcomp()` or `pca.result$scores` if you use `princomp()`.
+```{r}
+#PCA+Hierarchical Clustering using prcomp
+pca.result<-prcomp(mtcars,scale. = T)
+pca.result$x
+```
+
+b. For the principal component "variables" for the cars (which are the component scores), use the hierarchical clustering techniques that you learned in Problem 2. Use this to determine the optimal number of clusters, show the dendrogram and put a box around these clusters. **Use Complete Linkage only.** How does this compare with your answer result from the previous problem when you used complete linkage on the original variables?
+```{r}
+#Using hierarchical clustering techniques from problem 2 fviz_eig() function
+#fviz_eig(pca.result)
+#It won't knit using fviz_eig function but graph looks good
+
+#Getting distance for every pca variable score
+dist_pca<-dist(pca.result$x)
+#Clustering based on distance
+pca.cluster.comp<-hclust(dist_pca)
+
+#Plotting dendrogram
+plot(pca.cluster.comp,labels=rownames(mtcars),main="Cluster Dendrogram (Complete Linkage)")
+rect.hclust(pca.cluster.comp, 
+            k = 4, # replace with whatever you decided based upon (d)
+            border = c("red","blue","purple","magenta")
+            )
+
+#It gives me the same answer as the previous problem when used complete linkage
+```
+
+c. Using `k = 4` for the number of clusters, plot `PC2` versus `PC1` and use different colors to show the clusters. You will need to use `cutree()` to get the cluster assignments. Can you see the clusters a bit better than you did compared to plotting `mpg` versus `wt` in the previous problem?
+```{r}
+#Getting cluster assignments using cutree()
+as_cluster<-as.factor(cutree(pca.cluster.comp,h=4))
+
+```
+
+
+
+
+<!-- End of Problem 3 and the assignment -->
+***
+&nbsp;

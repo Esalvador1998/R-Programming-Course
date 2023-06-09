@@ -1,0 +1,352 @@
+---
+title: "CMDA-3654"
+subtitle: "Homework 8"
+author: "Eduardo Salvador"
+date: "Due as a .pdf upload"
+output:
+  pdf_document:
+    highlight: haddock
+    keep_tex: no
+    number_sections: no
+  html_document:
+    df_print: paged
+geometry: margin = 0.5in
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage{xcolor}
+editor_options:
+  chunk_output_type: console
+documentclass: article
+urlcolor: blue
+---
+
+<!-- The above is set to automatically compile to a .pdf file.   -->
+<!-- It will only succeed if LaTeX is installed. -->
+
+<!-- If you absolutely can't get LaTeX installed and/or working, then you can compile to a .html first,  -->
+<!-- by clicking on the arrow button next to knit and selecting Knit to HTML. -->
+
+<!-- You must then print you .html file to a .pdf by using first opening it in a web browser and then printing to a .pdf -->
+
+
+```{r setup, include=FALSE}
+# This is the setup chunk
+#  Here you can set global options for the entire document
+
+library(knitr) # I recommend doing this
+
+# Although you can call functions from a library using the following notation
+#  without loading the entire library.
+knitr::opts_chunk$set(echo = TRUE, 
+                      comment = NA, # Recommended
+                      fig.path = "./figures/",  # Store all figures here in relative path (make the folder first)
+                      fig.align = "center",
+                      fig.width = 7,
+                      fig.height = 7,
+                      message = FALSE, # Turn off load messages
+                      warning = FALSE # Turn off warnings
+                      )
+
+```
+
+\clearpage
+
+```{r include=FALSE}
+# You should not echo this chunk.
+# include=FALSE does more than echo=FALSE, it actually does: echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='hide'
+
+# You should set your working directory at the very beginning of your R Markdown file
+# setwd("~/Dropbox/teaching/SU19/CMDA_3654/homework/homework1/")
+
+# In linux ~/ is shorthand for /home/username/
+# You should type things out properly for your system
+# Mac: /Users/username/Documents/CMDA3654/Lectures/Lecture_03/.../
+# Windows: C:/Users/username/Documents/etc/Lecture/Lecture_03/.../
+
+
+```
+
+<!-- ---------------------------------------------------------------------------------------------------- -->
+<!-- ---------------- Homework Problems start below these lines ----------------------------------------- -->
+<!-- ---------------------------------------------------------------------------------------------------- -->
+
+
+
+
+***
+
+***
+
+
+# Problem 1: [35] Tests of association
+
+Load the `CoalMiners` data from the `vcd` library in R.
+
+a. Convert the 3-way table into a data frame with 36 rows and 4 columns.
+```{r}
+#Loading libraries
+library(tidyverse)
+library(vcd)
+
+#Creating dataframe
+coalminerdf<-as.data.frame(CoalMiners)
+coalminerdf
+
+```
+
+b. Flatten the 3-way table so that we can see everything in a single large table.
+```{r}
+#flattening table to see everything in a single large table with ftable
+ftable(coalminerdf)
+
+
+```
+
+c. Construct a stacked barplot with `Age` group on the x-axis and `Breathlessness` on the y-axis with the different outcomes of `Breathlessness` having different colors.
+```{r}
+#Barplot using ggplot
+ggplot(data=coalminerdf, aes(x=Age,y=Freq,fill=Breathlessness))+labs(x="Age",y="Breathlessness",tittle="Breathlessness by Age")+ theme_bw()+ geom_bar(stat = "identity")
+```
+
+  * The above plot is clearly an absolute frequency barplot. Remake the plot, this time using the relative frequencies (there are many ways to do this, do whatever seems easiest).
+```{r}
+#Creating relative frequency plot using ggplot
+ggplot(data=coalminerdf, aes(x=Age,y=Freq,fill=Breathlessness))+labs(x="Age",y="Breathlessness",tittle="Relative Frequency Breathlessness by Age")+ theme_bw()+ geom_bar(stat = "identity",position = "fill")
+```
+
+d. Repeat the above steps but this time with `Age` group on the x-axis and `Wheezing` on the y-axis with the different outcomes of `Wheezing` having different colors.
+```{r}
+#Barplot using ggplot
+ggplot(data=coalminerdf, aes(x=Age,y=Freq,fill=Wheeze))+labs(x="Age",y="Wheezing",tittle="Wheezing by Age")+ theme_bw()+ geom_bar(stat = "identity")+scale_fill_manual(values = c("gold","grey"))
+
+#Creating relative frequency plot using ggplot
+ggplot(data=coalminerdf, aes(x=Age,y=Freq,fill=Wheeze))+labs(x="Age",y="Wheezing",tittle="Relative Frequency Wheezing by Age")+ theme_bw()+ geom_bar(stat = "identity",position = "fill")+scale_fill_manual(values = c("gold","grey"))
+```
+
+e. Add a new column with the feature named "`Career`" to your data frame where you will recode the ages into the following three groups: "`Early`" = 20-34, "`Middle`" = 35-49, and "`Late`" = 50 - 64. These groups will reflect where people tend to be if they started their career at the age of 20 and stayed employed, i.e. Early Career, Middle Career, Late Career.
+* Construct a 3-way table for `Wheezing` Symptoms and `Breathlessness` Symptoms for the three `Career` levels. Each two-way table slice should be `Wheezing` versus `Breathlessness.`
+```{r}
+??????
+#Creating 3 groups by age 
+coalminerdf$Career[coalminerdf$Age=="20-24"]<-"Early"
+coalminerdf$Career[coalminerdf$Age=="25-29"]<-"Early"
+coalminerdf$Career[coalminerdf$Age=="30-34"]<-"Early"
+
+coalminerdf$Career[coalminerdf$Age=="35-39"]<-"Middle"
+coalminerdf$Career[coalminerdf$Age=="40-44"]<-"Middle"
+coalminerdf$Career[coalminerdf$Age=="45-49"]<-"Middle"
+
+coalminerdf$Career[coalminerdf$Age=="50-54"]<-"Late"
+coalminerdf$Career[coalminerdf$Age=="55-59"]<-"Late"
+coalminerdf$Career[coalminerdf$Age=="60-64"]<-"Late"
+
+#Creating 3 tables
+xtabs(Freq~Wheeze+Breathlessness+Career,data=coalminerdf)
+```
+
+f. Make a mosaic plot (use `shade = T` and the `mosaic()` function from the `vcd` library) for each of the following pair of features:
+    i. `Wheeze` versus `Career`
+```{r}
+#Creating variable for Wheeze vs Carrear
+wc<-xtabs(Freq~Wheeze+Career,data=coalminerdf)
+#Mosaic Plot
+mosaic(wc,shade = T)
+```
+    
+    ii. `Breathlessness` versus `Career`
+```{r}
+#Creating variable for Breathlessness vs Carrear
+bc<-xtabs(Freq~Breathlessness+Career,data=coalminerdf)
+#Mosaic Plot
+mosaic(bc,shade = T)
+```
+    
+    iii. `Wheeze` versus `Breathlessness`
+```{r}
+#Creating variable for Wheeze vs Breathlessness
+wb<-xtabs(Freq~Wheeze+Breathlessness,data=coalminerdf)
+#Mosaic Plot
+mosaic(wb,shade = T)
+```
+    
+    iv. Comment on the results.
+```{r}
+#There is no correlation between breathlessness and wheeze late in career.
+```
+
+g. Consider the 3-way table you constructed in part (e). There are three features: `Breathlessness`, `Wheezing`, and `Career.` **For each pair of features**, carry out a chi-square test of independence and report whether there is association between features.
+```{r}
+#Chi-square using chiq-test function
+chisq.test(wc)
+chisq.test(bc)
+chisq.test(wb,correct=F)
+
+#Because the p-value is less than 0.05 we can say there is correlation between features
+```
+
+
+<!-- End of Problem 1 -->
+***
+&nbsp;
+
+# Problem 2 [35 pts] Tests of association. 
+
+A random sample of 5,000 high school students who have applied for vocational training has been collected which contains their `Gender` and `Acceptance` into the program. The data is contained in `acceptance.csv`.
+
+a. After reading in the data, summarize the data into a 3D array of the counts (name this `byVoc` table) where the 3rd dimension corresponds to the `Vocation.` Display this output in the 3D format. Additionally display the data using a flat contingency table.
+```{r}
+#Reading csv file
+dfacceptance<-read.csv("/Users/eduardosalvador/Desktop/FINAL\ Spring\ Semester\ 2021/CMDA\ /Assignments/HW8/acceptance.csv")
+#Reading first 5 rows
+head(dfacceptance)
+
+#Summerizing into 3d array
+byVoc<-table(dfacceptance$Gender,dfacceptance$Accepted,dfacceptance$Vocation)
+byVoc
+
+#Displaing data using contigency table
+Cosmetology<-byVoc[,,"Cosmetology"]
+Cosmetology
+
+Nursing<-byVoc[,,"Nursing"]
+Nursing
+
+Plumbing<-byVoc[,,"Plumbing"]
+Plumbing
+
+Welding<-byVoc[,,"Welding"]
+Welding
+
+#Flatting tables
+ftable(Cosmetology)
+ftable(Nursing)
+ftable(Plumbing)
+ftable(Welding)
+```
+
+b. Construct an association plot using `assoc()` from the `vcd` library, use `shade = T` for the three features: `Accepted`, `Vocation`, and `Gender`. Comment on any patterns that you see.
+```{r}
+#Association plot
+assoc(dfacceptance,shade=T)
+```
+
+c. For each Vocation, carry out a chi-square test of independence and report whether there is association between Gender and Acceptance.
+```{r}
+#Using chisq.test function to carry out chi-square test of independance for every Vocation
+chisq.test(Cosmetology)
+chisq.test(Nursing)
+chisq.test(Plumbing)
+chisq.test(Welding)
+
+#Because the p-value is greater than 0.05 this means that there could be a lack 
+#of association between Gender and Acceptance in Cosmetology, Nursing and Welding but, 
+#for Plumbing since the p-value is less than 0.05, there is association.
+```
+
+d. Ignoring Vocation, carry out a single chi-square test of independence for the whole data and report whether there is association between `Gender` and `Acceptance`. Additionally provide a mosaic plot with `shade = T`.
+```{r}
+#Creating xtabs variable to ignore Vocation
+IgVoc<-xtabs(~Gender+Accepted,data=dfacceptance)
+IgVoc
+
+#Doing the chi-square test while ignoring Vocation
+chisq.test(IgVoc,correct = F )
+
+#Creating mosaic plot using mosaic function
+mosaic(IgVoc,shade = T)
+
+#Because the p-value is less than 0.05, there is association between Gender and Acceptance ignoring Vocation.
+
+```
+
+e. Carry out a **CMH chi-square test** and report whether there is association between Gender and Acceptance taking into account the different vocations.
+```{r}
+#Producing a common(weighted) odds ratio using mantelhaen.test() from the stats package
+library(stats)
+mantelhaen.test(byVoc)
+#Because the p=value is less than 0.05 we can say that there is indeed association between gender and 
+#acceptance doing the cmh chi-square test
+```
+
+f. Is there any conflict between the results obtained in parts (b-e), and c? What is your final conclusion regarding association between `Gender` and `Acceptance`?
+```{r}
+#It is hard to say because for b-e there is association in all of the results but, for c there is 
+#no assosiation so my conclusion would be that there is a high chance of association between acceptance and gender.
+```
+
+g. Construct a summary matrix with success rates for male and female applicants in each `Vocation.` Also calculate the overall success rate (i.e., ignoring department) of male and female candidates. From these numbers (without referring to statistical tests) what is your empirical conclusion—do you think there is gender bias in admissions? Why or why not?
+```{r}
+#Creating variables based on success rate
+male<-c(prop.table(Cosmetology,2)[4],prop.table(Nursing,2)[4],prop.table(Plumbing,2)[4],prop.table(Welding,2)[4])
+female<-c(prop.table(Cosmetology,2)[2],prop.table(Nursing,2)[2],prop.table(Plumbing,2)[2],prop.table(Welding,2)[2])
+
+#Cbinding male and female success rates
+combination<-cbind(male,female)
+rownames(combination)<-c("Cosmetology","Nursing","Plumbing","Welding")
+combination
+
+#My empirical conclusion lookin g at the success rate for male and female applicants in each Vocation is that
+#there is no gender bias whastoever since the percentages for male and female are not to far apart.
+```
+
+
+<!-- End of Problem 2 -->
+***
+&nbsp;
+
+# Problem 3 [30 pts] Market Basket Analysis. 
+
+Load the `Groceries` transactions database from the `arules` package in R (you will need to do `data("Groceries", package = "arules")` this time around). Answer the following questions:
+
+a. How many transactions and items are there in this database? What is the most frequent item and how many times was it bought?
+```{r}
+#Loading and summarizing data to find the amount of transactions and most frequent item
+library(arules)
+data("Groceries",package = "arules")
+summary(Groceries)
+
+#There are 9835 rows of transactions and the whole milk is the most frequent item with 2513 times appearance.
+```
+
+b. What percentage of transactions involved 20 or more items? On average, how many items were involved per transaction?
+```{r}
+#Looking at the summary table the percentage of transactions involving 20 or mkore items 
+# are 12/29 which is around 41%. 
+#On average there were 339.13793103448 items involved per transaction by summing all the items 
+#divided by the number of transactions from summary
+
+```
+
+c. Find all rules with support > 1% and confidence > 50%. How many such rules are there? Which of these rules has the highest confidence and highest support? Report the support, confidence, and lift of this rule. What are the interpretations of these numbers?
+```{r}
+#Finding all rules with rule function
+#rules(Groceries,parameter=list(supp=0.01,conf=0.5))
+```
+
+<!-- End of Problem 3 -->
+***
+&nbsp;
+
+# Problem 4 [10 pts **Extra Credit**] 
+
+Continue working with the data in problem 3.
+
+a. Which items do "whole milk" lead to?  Find all rules with support > 1%, confidence > 20%, and "whole milk" on the left hand side. Report these rules. 
+
+b. Which items lead to "whole milk"? Find all rules with support > 1%, confidence > 20%, and "whole milk" on the right hand side. Report these rules.
+
+<!-- End of Problem 4 and the assignment -->
+***
+&nbsp;
